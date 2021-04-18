@@ -16,7 +16,7 @@ if($request_data->action == "login")
     if($query->rowCount() == 1)
     {
         //$row = $query->fetch(PDO::FETCH_BOTH);
-        $output = array("message" => "Login Complete","login" => 1);
+        $output = array("message" => "Login Complete","login" => 1,"employeeID" => $employeeID);
         echo json_encode($output);
     }
     else
