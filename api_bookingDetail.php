@@ -74,8 +74,7 @@ if($request_data -> action == "addBookingDetail"){
     $bookingID = $request_data -> bookingID;
     $guestFirstName = check_input($request_data -> guestFirstName);
     $guestLastName = check_input($request_data -> guestLastName);
-    $roomID = $request_data -> roomNumber;
-    $roomID = 1202;                  
+    $roomID = $request_data -> roomNumber;               
     $checkIn = $request_data -> checkIn;
     $checkOut = $request_data -> checkOut;
 
@@ -141,8 +140,7 @@ if($request_data -> action == "addBookingDetail"){
       $query = $connect->query($sql);
 
       if($query){
-        $out['message'] = "User Added Successfully";
-        $out['Success'] = 1;
+        $out['success'] = true;
       }
       else{
         $out['error'] = true;
