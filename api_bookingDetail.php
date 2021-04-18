@@ -2,7 +2,6 @@
 require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 
-
 if($request_data -> action == "getRoomType"){
   
   // query
