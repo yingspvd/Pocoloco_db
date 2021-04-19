@@ -43,20 +43,35 @@ if($request_data -> action == "getRoomNumber"){
     $dataCheck = date('Y-m-d',strtotime($dataCheck. '1 days'));
   }
    
-  // roomID that reserve
-  $result = array_keys(array_flip($data));
+  if($query->rowCount() == 0){
+    $out['message']= "NO"; 
+    $sql_room = "SELECT roomID
+            FROM hotelroom 
+            WHERE roomTypeID = '$roomType'";
 
-  // Select roomID that available from hotelroom
-  $sql_room = "SELECT roomID 
-              FROM hotelroom
-              WHERE roomTypeID = '$roomType' AND
-                    roomID NOT IN ('" . implode( "', '" , $result ) . "')";
     $query = $connect->query($sql_room);
     
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){ 
         $data_room[] = $row;
     }
-  
+            
+  }
+  else{
+    // roomID that reserve
+    $result = array_keys(array_flip($data));
+
+    // Select roomID that available from hotelroom
+    $sql_room = "SELECT roomID 
+                FROM hotelroom
+                WHERE roomTypeID = '$roomType' AND
+                      roomID NOT IN ('" . implode( "', '" , $result ) . "')";
+      $query = $connect->query($sql_room);
+      
+      while($row = $query -> fetch(PDO::FETCH_ASSOC)){ 
+          $data_room[] = $row;
+      }
+    
+  }
   
   echo json_encode($data_room);
 }
