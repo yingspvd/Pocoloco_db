@@ -24,6 +24,42 @@ if($request_data -> action == "getBookingID"){
   echo json_encode($bookingID);
 }
 
+if($request_data -> action == "getBookingDetail"){
+  
+  $bookingID = $request_data -> bookingID;
+  
+  // query
+  $sql = "SELECT bookingDetailID,roomID
+          FROM bookingdetail 
+          WHERE bookingID = '$bookingID'";
+          
+  $query = $connect->query($sql);
+  
+  while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+       $data[] = $row;
+   }
+
+   echo json_encode($data);
+}
+
+if($request_data -> action == "editDetail"){
+  
+  $bookingDetail = $request_data -> bookingDetail;
+  
+  echo json_encode($bookingDetail);
+}
+
+if($request_data->action == "deleteBookingdetail"){
+  
+  $bookingDetail = $request_data -> bookingDetail;
+  
+  $query = "DELETE FROM bookingdetail WHERE bookingdetailID = $bookingDetail";
+  $statement = $connect -> prepare($query);
+  $statement -> execute();
+  $output['success'] = true;
+  $output['message'] = "Delete Complete";
+  echo json_encode($output);
+}
 
 if($request_data -> action == "addBooking"){
   
@@ -31,35 +67,19 @@ if($request_data -> action == "addBooking"){
   $bookingID = $request_data -> bookingID;
   $customerID = $request_data -> customerID;
 
-  // // Check have CustomerID
-  // $sql = "SELECT customerID 
-  //         FROM customer
-  //         GROUP BY customerID
-  //         HAVING customerID = $customerID"
+  $customerID = intval($customerID);
+
+  // Check have CustomerID
+  $sql = "SELECT customerID 
+          FROM customer
+          GROUP BY customerID
+          HAVING customerID = $customerID";
   
-  // $query = $connect->query($sql);
+  $query = $connect->query($sql);
 
-  // if($query->rowCount() == 1){
-  //   // Add Booking to DB
-  //   $sql = "INSERT INTO booking
-  //   VALUES ('$bookingID','$customerID')";
-
-  //   $query = $connect->query($sql);
-
-  //   if($query){
-  //     $out['message'] = "Added Successfully";
-  //   }
-  //   else{
-  //     $out['message'] = "Could not add";
-  //   }
-    
-  // }
-
-  // else{
-  //   $out['message'] = "Don't have this customer ID"
-  // }
-  
-  $sql = "INSERT INTO booking
+  if($query->rowCount() == 1){
+    // Add Booking to DB
+    $sql = "INSERT INTO booking
     VALUES ('$bookingID','$customerID')";
 
     $query = $connect->query($sql);
@@ -70,6 +90,24 @@ if($request_data -> action == "addBooking"){
     else{
       $out['message'] = "Could not add";
     }
+    
+  }
+
+  else{
+    $out['message'] = "Don't have this customer ID";
+  }
+  
+  // $sql = "INSERT INTO booking
+  //   VALUES ('$bookingID','$customerID')";
+
+  //   $query = $connect->query($sql);
+
+  //   if($query){
+  //     $out['message'] = "Added Successfully";
+  //   }
+  //   else{
+  //     $out['message'] = "Could not add";
+  //   }
     
   echo json_encode($out);
 
