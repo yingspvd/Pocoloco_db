@@ -36,18 +36,14 @@ if($request_data -> action == "getBookingDetail"){
           
   $query = $connect->query($sql);
   
-  while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-       $data[] = $row;
-   }
-
-   echo json_encode($data);
-}
-
-if($request_data -> action == "editDetail"){
+  if($query->rowCount() != 0){
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+      $data[] = $row;
+    }
+    echo json_encode($data);
+  }
   
-  $bookingDetail = $request_data -> bookingDetail;
-  
-  echo json_encode($bookingDetail);
+   
 }
 
 if($request_data->action == "deleteBookingdetail"){
@@ -87,6 +83,7 @@ if($request_data -> action == "addBooking"){
 
     if($query){
       $out['message'] = "Added Successfully";
+      $out['success'] = true;
     }
     else{
       $out['message'] = "Could not add";
