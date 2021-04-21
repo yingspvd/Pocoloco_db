@@ -120,38 +120,31 @@ if($request_data -> action == "addBookingDetail"){
 
     else{
 
-      // query BookingID
-      $sql = "SELECT MAX(bookingDetailID) AS bookingDetailID FROM bookingdetail";
-      $query = $connect->query($sql);
+      // // query BookingID
+      // $sql = "SELECT MAX(bookingDetailID) AS bookingDetailID FROM bookingdetail";
+      // $query = $connect->query($sql);
       
-      while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-          $data[] = $row;
-      }
+      // while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+      //     $data[] = $row;
+      // }
 
-      // Set BookingID
-      if($data[0]["bookingDetailID"] == ""){
-        $bookingDetailID = 1000000001;
-      }
-      else{
-        $bookingDetailID = $data[0]["bookingDetailID"] + 1;
-      }
+      // // Set BookingID
+      // if($data[0]["bookingDetailID"] == ""){
+      //   $bookingDetailID = 1000000001;
+      // }
+      // else{
+      //   $bookingDetailID = $data[0]["bookingDetailID"] + 1;
+      // }
       
       // Set Name
       $guestFirstName = ucfirst($guestFirstName);
       $guestLastName = ucfirst($guestLastName);
       $bookingID = intval($bookingID);
       
-      $out['bookingDetailID'] = $bookingDetailID;
-      $out['bookingID'] = $bookingID;
-      $out['checkIn'] = $checkIn;
-      $out['checkOut'] = $checkOut;
-      $out['guestFirstName'] = $guestFirstName;
-      $out['guestLastName'] = $guestLastName;
 
-      
       // Add Booking Detail in DB
-      $sql = "INSERT INTO bookingdetail(`bookingDetailID`, `bookingID`, `roomID`, `checkIn`, `checkOut`, `guestFirstName`, `guestLastName`, `status`, `dateTime`) 
-              VALUES ('$bookingDetailID','$bookingID','$roomID','$checkIn','$checkOut','$guestFirstName','$guestLastName','R',CURRENT_TIMESTAMP)";
+      $sql = "INSERT INTO bookingdetail(`bookingID`, `roomID`, `checkIn`, `checkOut`, `guestFirstName`, `guestLastName`, `status`, `dateTime`) 
+              VALUES ('$bookingID','$roomID','$checkIn','$checkOut','$guestFirstName','$guestLastName','R',CURRENT_TIMESTAMP)";
       $query = $connect->query($sql);
 
       if($query){
