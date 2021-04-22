@@ -93,58 +93,17 @@ if($request_data -> action == "addBookingDetail"){
     $checkIn = $request_data -> checkIn;
     $checkOut = $request_data -> checkOut;
 
-    // Check GuestName
-    if($guestFirstName==''){
-      $out['message'] = "Guest Name is required";
-    }
-      
-    // Check Guest Surname
-    else if($guestLastName ==''){
-      $out['message'] = "Guest Surname is required";
-    }
-    
-    // Check RoomType
-    else if($roomID ==''){
-      $out['message'] = "Room Number is required";
-    }
+   
+    // Set Name
+    $guestFirstName = ucfirst($guestFirstName);
+    $guestLastName = ucfirst($guestLastName);
+    $bookingID = intval($bookingID);
 
-    // Check Check in date
-    else if($checkIn ==''){
-      $out['message'] = "Check in date is required";
-    }
-
-    // Check Check out date
-    else if($checkOut ==''){
-      $out['message'] = "Check out date is required";
-    }
-
-    else{
-
-      // // query BookingID
-      // $sql = "SELECT MAX(bookingDetailID) AS bookingDetailID FROM bookingdetail";
-      // $query = $connect->query($sql);
-      
-      // while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-      //     $data[] = $row;
-      // }
-
-      // // Set BookingID
-      // if($data[0]["bookingDetailID"] == ""){
-      //   $bookingDetailID = 1000000001;
-      // }
-      // else{
-      //   $bookingDetailID = $data[0]["bookingDetailID"] + 1;
-      // }
-      
-      // Set Name
-      $guestFirstName = ucfirst($guestFirstName);
-      $guestLastName = ucfirst($guestLastName);
-      $bookingID = intval($bookingID);
-      
-
+    $i = 0;
+    while($i < count($roomID)){
       // Add Booking Detail in DB
       $sql = "INSERT INTO bookingdetail(`bookingID`, `roomID`, `checkIn`, `checkOut`, `guestFirstName`, `guestLastName`, `status`, `dateTime`) 
-              VALUES ('$bookingID','$roomID','$checkIn','$checkOut','$guestFirstName','$guestLastName','R',CURRENT_TIMESTAMP)";
+              VALUES ('$bookingID','$roomID[$i]','$checkIn','$checkOut','$guestFirstName','$guestLastName','R',CURRENT_TIMESTAMP)";
       $query = $connect->query($sql);
 
       if($query){
@@ -154,7 +113,9 @@ if($request_data -> action == "addBookingDetail"){
         $out['error'] = true;
         $out['message'] = "Could not add";
       }
+      $i += 1;
     }
+    
     echo json_encode($out);
 }
 
