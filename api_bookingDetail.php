@@ -61,10 +61,11 @@ if($request_data -> action == "getRoomNumber"){
     $result = array_keys(array_flip($data));
 
     // Select roomID that available from hotelroom
-    $sql_room = "SELECT roomID 
-                FROM hotelroom
-                WHERE roomTypeID = '$roomType' AND
-                      roomID NOT IN ('" . implode( "', '" , $result ) . "')";
+    $sql_room = "SELECT h.roomID,r.roomType 
+                FROM hotelroom h,roomdescription r
+                WHERE h.roomTypeID = '$roomType' AND
+                      h.roomTypeID = r.roomTypeID AND
+                      h.roomID NOT IN ('" . implode( "', '" , $result ) . "')";
       $query = $connect->query($sql_room);
       
       while($row = $query -> fetch(PDO::FETCH_ASSOC)){ 
