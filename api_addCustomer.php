@@ -64,6 +64,7 @@ if ($request_data->action == "insert") {
 
         if($query){
             $out['message'] = "Added Successfully";
+            $out['success'] = true;
           }
           else{
             $out['error'] = true;
