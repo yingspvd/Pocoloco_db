@@ -2,14 +2,11 @@
 require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 
-if($request_data -> action == "getCustomer"){
-    $sql = "SELECT c.customerID, concat(c.firstName,' ', c.lastName) AS customerName, 
-            c.DOB, c.gender, c.phone, c.email, c.address,
-            COUNT(b.bookingID) AS numberStay
-            FROM customer c, booking b
-            WHERE c.customerID = b.customerID
-            GROUP BY b.customerID                     
-            ORDER BY numberStay DESC,b.customerID";
+if($request_data -> action == "getAllCustomer"){
+    $sql = "SELECT c.*, n.numberVisit
+            FROM customer c LEFT JOIN
+            numberVisit n ON c.customerID = n.customerID
+            ORDER BY n.numberVisit DESC, customerID";
                     
     $query = $connect->query($sql);
     
@@ -23,15 +20,13 @@ if($request_data -> action == "getCustomer"){
 if($request_data->action=="searchData"){
     $search = $request_data->search;
     
-    $sql="SELECT c.customerID, concat(c.firstName,' ', c.lastName) AS customerName, 
-            c.DOB, c.gender, c.phone, c.email, c.address,
-            COUNT(b.bookingID) AS numberStay
-            FROM customer c, booking b
-            WHERE c.customerID = b.customerID AND 
-            	(c.customerID LIKE '%$search%' OR c.firstName LIKE '$search%' OR
+    $sql = "SELECT c.*, n.numberVisit
+            FROM customer c LEFT JOIN
+            numberVisit n ON c.customerID = n.customerID
+            WHERE 
+            	(c.customerID LIKE '$search%' OR c.firstName LIKE '$search%' OR
                 c.lastName LIKE '$search%' )
-            GROUP BY b.customerID                     
-            ORDER BY numberStay DESC,b.customerID";
+            ORDER BY n.numberVisit DESC, customerID";
             
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
