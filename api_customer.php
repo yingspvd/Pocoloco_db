@@ -24,16 +24,15 @@ if($request_data->action=="searchData"){
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
 
-    /////////// แก้ให้เป็น expense ///////////////
-    // if($sort == "rank"){
-    //     $sort = "customerID";
-    // }
-    // if($filter == "rank"){
-    //     $filter = "customerID";
-    // }
+    ///////// แก้ให้เป็น expense ///////////////
+    if($sort == "rank"){
+        $sort = "customerID";
+    }
+    if($filter == "rank"){
+        $filter = "customerID";
+    }
     
     if($sort == "all"  && $filter == "all" ){
-        $out = 1;
         $sql = "SELECT c.*, n.numberVisit
                 FROM customer c LEFT JOIN
                 numberVisit n ON c.customerID = n.customerID
@@ -44,7 +43,6 @@ if($request_data->action=="searchData"){
     }
     
     elseif($sort != "all" && $sort != "numberVisit"  && $filter == "all" ){
-        $out = 2;
         $sql = "SELECT c.*, n.numberVisit
             FROM customer c LEFT JOIN
             numberVisit n ON c.customerID = n.customerID
@@ -55,7 +53,6 @@ if($request_data->action=="searchData"){
     }
 
     elseif($sort == "numberVisit"  && $filter == "all" ){
-        $out = 3;
         $sql = "SELECT c.*, n.numberVisit
             FROM customer c LEFT JOIN
             numberVisit n ON c.customerID = n.customerID
@@ -66,7 +63,6 @@ if($request_data->action=="searchData"){
     }
     
     elseif($sort == "numberVisit"  && $filter != "all" ){
-        $out = 4;
         $sql = "SELECT c.*, n.numberVisit
             FROM customer c LEFT JOIN
             numberVisit n ON c.customerID = n.customerID
@@ -77,7 +73,6 @@ if($request_data->action=="searchData"){
     }
     
     elseif(($sort == "all") && ($filter == "numberVisit")){
-        $out = 5;
         $sql = "SELECT c.*, n.numberVisit
                 FROM customer c LEFT JOIN
                 numberVisit n ON c.customerID = n.customerID
@@ -87,17 +82,15 @@ if($request_data->action=="searchData"){
     }
     
     elseif(($sort == "all") && ($filter != "all")){
-        $out = 6;
         $sql = "SELECT c.*, n.numberVisit
                 FROM customer c LEFT JOIN
                 numberVisit n ON c.customerID = n.customerID
-                WHERE 
+                WHERE   
                     (c.$filter LIKE '$search%' )
                 ORDER BY n.numberVisit DESC,customerID";
     }
 
     else{
-        $out = 7;
         $sql = "SELECT c.*, n.numberVisit
                 FROM customer c LEFT JOIN
                 numberVisit n ON c.customerID = n.customerID
@@ -106,13 +99,6 @@ if($request_data->action=="searchData"){
                 ORDER BY c.$sort";
     }
 
-    // $sql = "SELECT c.*, n.numberVisit
-    //         FROM customer c LEFT JOIN
-    //         numberVisit n ON c.customerID = n.customerID
-    //         WHERE 
-    //         	(c.customerID LIKE '$search%' OR c.firstName LIKE '$search%' OR
-    //             c.lastName LIKE '$search%' )
-    //         ORDER BY n.numberVisit DESC, customerID";
             
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
