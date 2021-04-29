@@ -86,7 +86,7 @@ if($request_data->action=="getSearchData"){
     if($statement->rowCount() == 0)
     {
         $data = "";
-    }
+    } 
     
     echo json_encode($data);   
 }
