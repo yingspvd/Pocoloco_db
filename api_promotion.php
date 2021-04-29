@@ -91,8 +91,18 @@ if($request_data -> action == "updateData"){
     $roomType = $request_data -> roomType;
     $discount = $request_data -> discount;
     
+    $sql_value = "SELECT s.seasonID,r.roomTypeID
+                    FROM season s, roomdescription r
+                    WHERE s.seasonName = '$season' AND r.roomType = '$roomType'"; 
+    $query = $connect->query($sql_value);
+    
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $seasonID = $row['seasonID'];
+        $roomTypeID = $row['roomTypeID'];
+    } 
+                    
     $sql = "UPDATE promotion 
-            SET promotionName = '$promotion', seasonID = '$season', roomTypeID = '$roomType', 
+            SET promotionName = '$promotion', seasonID = '$seasonID', roomTypeID = '$roomTypeID', 
                 startDate = '$startDate', endDate = '$endDate' , discount = '$discount'
             WHERE promotionID = '$promotionID'";
     $query = $connect->query($sql);
@@ -107,3 +117,21 @@ if($request_data -> action == "updateData"){
 
     echo json_encode($out); 
 }
+
+
+if($request_data->action == "deleteData"){
+  
+    $promotionID = $request_data -> promotionID;
+    
+    $sql = "DELETE FROM promotion WHERE promotionID = '$promotionID'";
+    $query = $connect->query($sql);
+
+    if($query){
+        $out['message'] = "Deleted Successfully";
+        $out['success'] = true;
+        }
+    else{
+        $out['message'] = "Could not delete ";
+    }
+    echo json_encode($out);
+  }
