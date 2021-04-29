@@ -15,6 +15,11 @@ if($request_data -> action == "getAllCustomer"){
         $data[] = $row;
     }
     
+    if($query->rowCount() == 0)
+    {
+        $data = "";
+    }
+    
     echo json_encode($data);   
 } 
 
@@ -178,27 +183,4 @@ if($request_data -> action == "updateData"){
         }
 
     echo json_encode($out); 
-}
-
-if($request_data -> action == "deleteData"){
-    $sql = "DELETE FROM customer WHERE customerID = $request_data->customerID";
-    $query = $connect->query($sql);
-
-    if($query){
-        $out['message'] = "Deleted Successfully";
-        $out['success'] = true;
-        }
-    else{
-        $out['message'] = "Could not delete ";
-    }
-
-    echo json_encode($out); 
-}
-
-if($request_data -> action == "getColumnName"){
-    
-    $sql = "SELECT COLUMN_NAME
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_NAME = 'customer'
-            ORDER BY ORDINAL_POSITION";
 }
