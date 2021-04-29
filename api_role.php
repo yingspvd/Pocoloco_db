@@ -5,46 +5,61 @@ $data = array();
 
 
 if($request_data->action=="getSearchData"){
+    
     $search = $request_data->search;
+    $sort = $request_data -> sort;
+    $filter = $request_data -> filter;
+    
+    function convertToID(){
+        
+    }
+    if($filter == "department" || $sort == "department"){
+        convertToID()
+    }
+
+
     
     $query="SELECT r.roleID, r.roleName, r.salary, r.bonusRate, d.departmentName 
-    FROM role r, department d
-    WHERE r.roleID LIKE '%$search%' OR r.roleName LIKE '%$search%' OR r.salary LIKE '%$search%' OR r.bonusRate LIKE '%$search%' OR d.departmentName  LIKE '%$search%'
-    GROUP BY r.roleID";
+            FROM role r, department d
+            WHERE r.roleID LIKE '%$search%' OR r.roleName LIKE '%$search%' OR r.salary LIKE '%$search%' 
+            OR r.bonusRate LIKE '%$search%' OR d.departmentName  LIKE '%$search%'
+            GROUP BY r.roleID"; 
+    
     $statement=$connect->prepare($query);
-    $statement->execute();  //ไม่มี data ไม่ได้โยนข้อมูลไป
-    // loop เก็บข้อมูลลงไปใน data 
+    $statement->execute(); 
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
         $data[]=$row;
     }
     
-    echo json_encode($data);   //table
+    echo json_encode($data);   
 }
 
 if($request_data->action=="getAll"){
+    
     $query="SELECT r.roleID, r.roleName, r.salary, r.bonusRate, d.departmentName 
-    FROM role r, department d
-    WHERE r.departmentID = d.departmentID
-    GROUP BY r.roleID";
+            FROM role r, department d
+            WHERE r.departmentID = d.departmentID
+            GROUP BY r.roleID";
+    
     $statement=$connect->prepare($query);
-    $statement->execute();  //ไม่มี data ไม่ได้โยนข้อมูลไป
-    // loop เก็บข้อมูลลงไปใน data 
+    $statement->execute();  
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
         $data[]=$row;
     }
     
-    echo json_encode($data);   //table
+    echo json_encode($data);  
 }
 
 if($request_data->action=="getEditUser"){
+    
     $query="SELECT r.roleID, r.roleName, r.salary, r.bonusRate, d.departmentName 
             FROM role r, department d 
             WHERE roleID = $request_data->roleID 
                 AND r.departmentID = d.departmentID";
+                
     $statement=$connect->prepare($query);
     $statement->execute(); 
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
-        // เปลี่ยนจาก array เป็นobject
         $data['roleID']=$row['roleID'];
         $data['roleName']=$row['roleName'];
         $data['salary']=$row['salary'];
@@ -52,11 +67,10 @@ if($request_data->action=="getEditUser"){
         $data['departmentID']=$row['departmentName'];
     }
     
-    echo json_encode($data);   //table
+    echo json_encode($data);   
 }
 
 if($request_data->action == "update"){
-    //จัดเตรียมข้อมูล
     $data = array(":roleID" => $request_data->roleID,
                 ":salary" => $request_data -> salary,
                 ":bonusRate" => $request_data -> bonusRate,);
