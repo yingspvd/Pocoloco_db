@@ -9,26 +9,83 @@ if($request_data->action=="getSearchData"){
     $search = $request_data->search;
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
-    
-    function convertToID(){
-        
-    }
-    if($filter == "department" || $sort == "department"){
-        convertToID()
-    }
 
-
-    
-    $query="SELECT r.roleID, r.roleName, r.salary, r.bonusRate, d.departmentName 
+    if($sort == "all" && $filter == "all"){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
             FROM role r, department d
-            WHERE r.roleID LIKE '%$search%' OR r.roleName LIKE '%$search%' OR r.salary LIKE '%$search%' 
-            OR r.bonusRate LIKE '%$search%' OR d.departmentName  LIKE '%$search%'
-            GROUP BY r.roleID"; 
-    
+            WHERE r.roleID LIKE '$search%' OR r.roleName LIKE '$search%' OR r.salary LIKE '$search%' 
+            OR r.bonusRate LIKE '$search%' OR d.departmentName  LIKE '%$search%'
+            GROUP BY r.roleID 
+            ORDER BY r.roleID,d.departmentName,r.roleName,r.salary DESC,r.bonusRate DESC"; 
+    }    
+    elseif($sort == "all" && $filter != "all" && $filter == "departmentName" ){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE  d.$filter  LIKE '%$search%'
+            GROUP BY r.roleID 
+            ORDER BY r.roleID,d.departmentName,r.roleName,r.salary DESC,r.bonusRate DESC"; 
+    }
+    elseif($sort == "all" && $filter != "all" && $filter != "departmentName" ){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE  r.$filter  LIKE '$search%'
+            GROUP BY r.roleID 
+            ORDER BY r.roleID,d.departmentName,r.roleName,r.salary DESC,r.bonusRate DESC"; 
+    }
+    elseif($sort != "all" && $sort == "departmentName" && $filter == "all"  ){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE r.roleID LIKE '$search%' OR r.roleName LIKE '$search%' OR r.salary LIKE '$search%' 
+            OR r.bonusRate LIKE '$search%' OR d.departmentName  LIKE '%$search%'
+            GROUP BY r.roleID 
+            ORDER BY d.departmentName"; 
+    }
+    elseif($sort != "all" && $sort != "departmentName" && $filter == "all"  ){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE r.roleID LIKE '$search%' OR r.roleName LIKE '$search%' OR r.salary LIKE '$search%' 
+            OR r.bonusRate LIKE '$search%' OR d.departmentName  LIKE '%$search%'
+            GROUP BY r.roleID 
+            ORDER BY r.$sort"; 
+    }
+    elseif($sort != "all" && $sort == "departmentName" && $filter != "all"  && $filter != "departmentName"){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE r.$filter LIKE '$search%' 
+            GROUP BY r.roleID 
+            ORDER BY d.departmentName"; 
+    }
+    elseif($sort != "all" && $sort == "departmentName" && $filter != "all"  && $filter == "departmentName"){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE d.$filter LIKE '$search%' 
+            GROUP BY r.roleID 
+            ORDER BY d.departmentName"; 
+    }
+    elseif($sort != "all" && $sort != "departmentName" && $filter != "all"  && $filter == "departmentName"){
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE d.$filter LIKE '$search%' 
+            GROUP BY r.roleID 
+            ORDER BY r.$sort"; 
+    }
+    else{
+        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
+            FROM role r, department d
+            WHERE r.$filter LIKE '$search%' 
+            GROUP BY r.roleID 
+            ORDER BY r.$sort"; 
+    }
+
     $statement=$connect->prepare($query);
     $statement->execute(); 
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
         $data[]=$row;
+    }
+
+    if($statement->rowCount() == 0)
+    {
+        $data = "";
     }
     
     echo json_encode($data);   
@@ -48,6 +105,7 @@ if($request_data->action=="getAll"){
     }
     
     echo json_encode($data);  
+    
 }
 
 if($request_data->action=="getEditUser"){
