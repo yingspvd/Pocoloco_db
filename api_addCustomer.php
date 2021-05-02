@@ -74,3 +74,4 @@ if ($request_data->action == "insert") {
     }
     echo json_encode($out);
 }
+?>

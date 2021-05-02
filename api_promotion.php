@@ -349,3 +349,5 @@ if($request_data->action == "deleteData"){
     }
     echo json_encode($out);
   }
+
+?>

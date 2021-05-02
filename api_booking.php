@@ -110,3 +110,4 @@ if($request_data -> action == "addBooking"){
   echo json_encode($out);
 
 }
+?>
