@@ -221,7 +221,7 @@ if($request_data->action == "addEmployee")
 
         $sql = "INSERT INTO employee 
               (employeeID ,department,roleID, startDate,shift, em_firstname,em_lastname,identification,DOB,gender,phone,email,password,workStatus) 
-              VALUES ('$employeeID' ,'$department','$roleID', '$startDate','$shift', '$firstName','$lastName','$identification','$DOB','$gender','$phone','$email', '$password','Y')";
+              VALUES ('$employeeID' ,'$department','$roleID', '$startDate','$shift', '$firstName','$lastName','$identification','$DOB','$gender','$phone','$email', '$password','E')";
         $query = $connect->query($sql);
 
         if($query){
