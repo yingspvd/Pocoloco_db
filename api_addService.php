@@ -25,25 +25,32 @@ if($request_data -> action == "confirmService"){
     $serviceID = $request_data -> serviceID;
     $amount = $request_data -> amount;
     $total = $request_data -> total;
-    $roomID = $request_data -> roomID;
+    $roomID = intval($request_data -> roomID);
 
-
-    $sql = "INSERT INTO roomservice(roomID,serviceID,amount,total)
+    // Check have RoomID
+    $sql = "SELECT roomID 
+            FROM hotelroom
+            HAVING roomID = $roomID";
+    $query = $connect->query($sql);
+    if($query-> rowCount() == 1){
+        $sql = "INSERT INTO roomservice(roomID,serviceID,amount,total)
             VALUES ('$roomID','$serviceID','$amount','$total')";
                     
-    $query = $connect->query($sql);
-    
-    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-        $data[] = $row;
+        $query = $connect->query($sql);
+
+        if($query){
+            $out['sucess'] = true;
+            $out['message'] = "Added Successfully";
+        }
+        else{
+            $out['message'] = "Could not add";
+        }
+    }
+    else{
+        $out['sucess'] = false;
+        $out['message'] = "Don't have room ID $roomID" ;
     }
 
-    if($query){
-        $out['message'] = "Added Successfully";
-      }
-      else{
-        $out['message'] = "Could not add";
-      }
-    
      echo json_encode($out);  
 }
 ?>
