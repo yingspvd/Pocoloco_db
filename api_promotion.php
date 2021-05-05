@@ -23,9 +23,6 @@ if($request_data->action=="searchData"){
     $filter = $request_data->filter;
     $sort = $request_data->sort;
     
-    if($filter == "discount"){
-        $search = $search / 100;
-    }
     if($filter == "all" && $sort == "all"){
         $sql="SELECT *
             FROM promotion_view
