@@ -3,7 +3,7 @@ require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 $data = array();
 
-if($request_data->action == 'getallService')
+if($request_data->action == 'getAllService')
 {
     $sql="SELECT * FROM service_view";
     $query = $connect->query($sql);
@@ -62,23 +62,16 @@ if($request_data->action == 'searchService')
     
 if($request_data->action == 'updateData')
 {
-    $serviceID = $request_data->serviceID;
-    $type = $request_data->type;
+    $serviceID = intval($request_data->serviceID) ;
+    $type = intval($request_data->type);
     $name = $request_data->name;
-    $servicePrice = $request_data->servicePrice;
+    $servicePrice = floatval($request_data->servicePrice) ;
 
-    if($type == "Food"){
-        $type = 1;
-    }
-    elseif($type == "Room Facilities"){
-        $type = 2;
-    }
-    
     $sql = "UPDATE servicelist 
-                SET type = '$type', 
+                SET type = $type, 
                 name = '$name' ,
-                servicePrice = '$servicePrice'
-                WHERE serviceID = '$serviceID'
+                servicePrice = $servicePrice
+                WHERE serviceID = $serviceID
                 ";
 
     $query = $connect->query($sql);
