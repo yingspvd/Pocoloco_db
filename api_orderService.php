@@ -3,6 +3,19 @@ require_once 'connect.php';
 
 $request_data = json_decode(file_get_contents("php://input"));
 
+if($request_data->action == 'getAllService')
+{
+    $sql="SELECT * FROM service_view
+        ORDER BY serviceID";
+    $query = $connect->query($sql);
+        
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+
+    echo json_encode($data);   
+}
+
 if($request_data -> action == "searchService"){
 
     $search = $request_data -> search;
@@ -32,6 +45,7 @@ if($request_data -> action == "confirmService"){
             FROM hotelroom
             HAVING roomID = $roomID";
     $query = $connect->query($sql);
+    
     if($query-> rowCount() == 1){
         $sql = "INSERT INTO roomservice(roomID,serviceID,amount,total)
             VALUES ('$roomID','$serviceID','$amount','$total')";
@@ -39,7 +53,7 @@ if($request_data -> action == "confirmService"){
         $query = $connect->query($sql);
 
         if($query){
-            $out['sucess'] = true;
+            $out['success'] = true;
             $out['message'] = "Added Successfully";
         }
         else{
@@ -47,7 +61,7 @@ if($request_data -> action == "confirmService"){
         }
     }
     else{
-        $out['sucess'] = false;
+        $out['success'] = false;
         $out['message'] = "Don't have room ID $roomID" ;
     }
 
