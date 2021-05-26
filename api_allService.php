@@ -56,6 +56,11 @@ if($request_data->action == 'searchService')
         $data[] = $row;
     }
   
+    if($query->rowCount() == 0)
+    {
+        $data = "";
+    }
+    
     echo json_encode($data);
 
 }
