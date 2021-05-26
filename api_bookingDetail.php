@@ -93,18 +93,57 @@ if($request_data -> action == "addBookingDetail"){
     $roomID = $request_data -> roomNumber;               
     $checkIn = $request_data -> checkIn;
     $checkOut = $request_data -> checkOut;
-
+    $roomTypeID = intval($request_data -> roomType);
    
     // Set Name
     $guestFirstName = ucfirst($guestFirstName);
     $guestLastName = ucfirst($guestLastName);
     $bookingID = intval($bookingID);
 
+    // Get Room Price
+    $dataCheck = $checkIn;
+    $amountPaid = 0;
+    while($dataCheck <= $checkOut){
+      $sql = "SELECT roomPriceDiscount 
+      FROM roomprice_view 
+      WHERE roomTypeID = '$roomTypeID' AND
+            ('$dataCheck' BETWEEN startDate AND endDate)";
+              
+      $query = $connect->query($sql);
+      while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+          $data[0] = $row["roomPriceDiscount"];
+      }
+      
+      // Full Price
+      if($query->rowCount() == 0){
+        $sql = "SELECT roomPrice
+              FROM  roomdescription 
+              WHERE  roomTypeID = $roomTypeID";
+        
+        $query = $connect->query($sql);
+  
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[0] = $row["roomPrice"];
+        }
+      
+        $amountPaid += floatval($data[0]);
+      }
+      // Promotion Price
+      else{
+        $amountPaid += floatval($data[0]);
+      }
+  
+      $dataCheck = date('Y-m-d',strtotime($dataCheck. '1 days'));
+    }
+
+    
+    // Add Booking Detail in DB
     $i = 0;
+    
     while($i < count($roomID)){
-      // Add Booking Detail in DB
-      $sql = "INSERT INTO bookingdetail(`bookingID`, `roomID`, `checkIn`, `checkOut`, `guestFirstName`, `guestLastName`, `status`, `dateTime`) 
-              VALUES ('$bookingID','$roomID[$i]','$checkIn','$checkOut','$guestFirstName','$guestLastName','R',CURRENT_TIMESTAMP)";
+      
+      $sql = "INSERT INTO bookingdetail(`bookingID`, `roomID`, `checkIn`, `checkOut`, `guestFirstName`, `guestLastName`, `status`,`price`, `dateTime`) 
+              VALUES ('$bookingID','$roomID[$i]','$checkIn','$checkOut','$guestFirstName','$guestLastName','R','$amountPaid',CURRENT_TIMESTAMP)";
       $query = $connect->query($sql);
 
       if($query){

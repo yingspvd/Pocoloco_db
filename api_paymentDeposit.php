@@ -3,14 +3,14 @@ require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 
 if($request_data -> action == "getInformation"){
-    $bookingID = intval($request_data -> bookingID) ;
+    $bookingID = intval($request_data -> bookingID);
 
-    $sql = "SELECT c.customerID,firstName,lastName,phone
-            FROM customer c, booking b
-            WHERE c.customerID = b.CustomerID AND
+    $sql = "SELECT *
+            FROM payment p, bookingdetail b
+            WHERE p.bookingDetailID = b.bookingDetailID AND
                 b.BookingID = $bookingID
             ";
-
+    
     $query = $connect->query($sql);
         
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -19,9 +19,28 @@ if($request_data -> action == "getInformation"){
 
     if($query->rowCount() == 0)
     {
-        $data = "";
-        
+        $sql = "SELECT c.customerID,firstName,lastName,phone
+            FROM customer c, booking b
+            WHERE c.customerID = b.CustomerID AND
+                b.BookingID = $bookingID
+            ";
+
+        $query = $connect->query($sql);
+            
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+            $data[] = $row;
+        }
+
+        if($query->rowCount() == 0){
+            $data = "1" ;
+        }
+
     } 
+    else{
+        $data = "2";
+    }
+
+    
     
     echo json_encode($data);  
     
@@ -30,7 +49,7 @@ if($request_data -> action == "getInformation"){
 if($request_data->action=="getPayment"){
     $bookingID = intval($request_data -> bookingID);
 
-    $sql ="SELECT b.roomID,r.roomType,r.roomPrice
+    $sql ="SELECT b.roomID,r.roomType,DATEDIFF( b.checkOut, b.checkIn) AS day,b.price
             FROM bookingdetail b, hotelroom h, roomdescription r
             WHERE b.roomID = h.roomID AND
                 h.roomTypeID = r.roomTypeID AND
