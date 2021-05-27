@@ -1,113 +1,110 @@
-<?php 
+<?php
 require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
-$out = array();
+$data = array();
 
-if($request_data -> action == "getBookingID"){
-  
-  // query
-  $sql = "SELECT MAX(bookingID) AS bookingID FROM booking";
-  $query = $connect->query($sql);
-  
-  while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-      $data[] = $row;
-  }
 
-  // Set BookingID
-  if($data[0]["bookingID"] == ""){
-    $bookingID = 1000000001;
-  }
-  else{
-    $bookingID = $data[0]["bookingID"] + 1;
-  }
-  
-  echo json_encode($bookingID);
-}
 
-if($request_data -> action == "getBookingDetail"){
-  
-  $bookingID = $request_data -> bookingID;
-  
-  // query
-  $sql = "SELECT b.bookingDetailID,b.roomID,d.roomType
-          FROM bookingdetail b,roomdescription d
-          WHERE b.bookingID = '$bookingID'
-          GROUP BY b.bookingDetailID";
-          
-  $query = $connect->query($sql);
-  
-  if($query->rowCount() != 0){
-    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-      $data[] = $row;
+if($request_data->action=="getAll"){
+    $query="SELECT * 
+            FROM booking_view
+            ORDER BY bookingID DESC";
+    $statement=$connect->prepare($query);
+    $statement->execute();
+    while($row = $statement->fetch(PDO::FETCH_ASSOC)){
+        $data[]=$row;
     }
-    echo json_encode($data);
-  }
-  
-   
+    
+    echo json_encode($data);   //table
 }
 
-if($request_data->action == "deleteBookingdetail"){
-  
-  $bookingDetail = $request_data -> bookingDetail;
-  
-  $query = "DELETE FROM bookingdetail WHERE bookingdetailID = $bookingDetail";
-  $statement = $connect -> prepare($query);
-  $statement -> execute();
-  $output['success'] = true;
-  $output['message'] = "Delete Complete";
-  echo json_encode($output);
-}
+if($request_data->action=="SearchData"){
+    $search = $request_data->search;
+    $sort = $request_data -> sort;
+    $filter = $request_data -> filter;
+    $direction = $request_data -> direction;
 
-if($request_data -> action == "addBooking"){
-  
-  // Input from USER
-  $bookingID = $request_data -> bookingID;
-  $customerID = $request_data -> customerID;
-
-  $customerID = intval($customerID);
-
-  // Check have CustomerID
-  $sql = "SELECT customerID 
-          FROM customer
-          GROUP BY customerID
-          HAVING customerID = $customerID";
-  
-  $query = $connect->query($sql);
-
-  if($query->rowCount() == 1){
-    // Add Booking to DB
-    $sql = "INSERT INTO booking
-    VALUES ('$bookingID','$customerID')";
-
-    $query = $connect->query($sql);
-
-    if($query){
-      $out['message'] = "Added Successfully";
-      $out['success'] = true;
+    if($direction == "up"){
+        $sql = "SELECT *
+        FROM booking_view
+        WHERE $filter LIKE '$search%'
+        ORDER BY $sort DESC";
+    }
+    else if($direction == "down"){
+        $sql = "SELECT *
+        FROM booking_view
+        WHERE $filter LIKE '$search%'
+        ORDER BY $sort";
     }
     else{
-      $out['message'] = "Could not add";
+        $sql = "SELECT *
+        FROM booking_view
+        ORDER BY bookingID DESC";
+    }
+   
+    $query = $connect->query($sql);
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+
+    if($query->rowCount() == 0){
+        $data = "";
     }
     
-  }
-
-  else{
-    $out['message'] = "Don't have this customer ID";
-  }
-  
-  // $sql = "INSERT INTO booking
-  //   VALUES ('$bookingID','$customerID')";
-
-  //   $query = $connect->query($sql);
-
-  //   if($query){
-  //     $out['message'] = "Added Successfully";
-  //   }
-  //   else{
-  //     $out['message'] = "Could not add";
-  //   }
-    
-  echo json_encode($out);
-
+    echo json_encode($data);   
 }
+
+if($request_data->action=="getBookingDetail"){
+    $query="SELECT bookingDetailID, roomID, status
+            FROM bookingDetail 
+            WHERE bookingID = $request_data->bookingID"
+            ;
+    $statement=$connect->prepare($query);
+    $statement->execute(); 
+    while($row = $statement->fetch(PDO::FETCH_ASSOC)){
+       
+        $data[]=$row;      
+    }
+    
+    echo json_encode($data);   
+}
+
+if($request_data->action=="getEditDetail"){
+    $query="SELECT bookingDetailID, guestFirstname, guestLastname, checkIn, checkOut, status
+            FROM bookingDetail 
+            WHERE bookingDetailID = $request_data->bookingDetailID"
+            ;
+    $statement=$connect->prepare($query);
+    $statement->execute(); 
+    while($row = $statement->fetch(PDO::FETCH_ASSOC)){
+        $data['bookingDetailID']=$row['bookingDetailID'];
+        $data['guestFirstname']=$row['guestFirstname'];
+        $data['guestLastname']=$row['guestLastname'];
+        $data['checkIn']=$row['checkIn'];
+        $data['checkOut']=$row['checkOut'];
+        $data['statusRoom']=$row['status'];
+              
+    }
+    
+    echo json_encode($data);  
+}
+
+if($request_data->action == "update"){
+    $data = array(":bookingDetailID" => $request_data -> bookingDetailID,
+                ":guestFirstname" => $request_data -> guestFirstname,
+                ":guestLastname" => $request_data -> guestLastname,
+                ":checkIn" => $request_data -> checkIn,
+                ":checkOut" => $request_data -> checkOut,
+                ":statusRoom" => $request_data -> statusRoom);
+    $query = "UPDATE bookingdetail SET  guestFirstName = :guestFirstname, guestLastName = :guestLastname, 
+                                        checkIn = :checkIn,  checkOut = :checkOut, status = :statusRoom
+    WHERE bookingDetailID = :bookingDetailID";
+    $statement = $connect -> prepare($query);
+    $statement -> execute($data);
+    $output = array("message" => "Update Complete");
+    echo json_encode($output);
+                
+}
+
+
 ?>
