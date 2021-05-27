@@ -41,28 +41,51 @@ if($request_data -> action == "getSeason"){
 if($request_data-> action == "addPromotion")
 {
     // From User
-        $seasonID = intval($request_data -> seasonID);
-        $roomTypeID = intval($request_data -> roomTypeID);
-        $promotionName = ucfirst($request_data -> promotionName);
-        $startDate = $request_data -> startDate;
-        $endDate = $request_data -> endDate;
-        $discount = floatval($request_data -> discount);
+    $seasonID = intval($request_data -> seasonID);
+    $roomTypeID = intval($request_data -> roomTypeID);
+    $promotionName = ucfirst($request_data -> promotionName);
+    $startDate = $request_data -> startDate;
+    $endDate = $request_data -> endDate;
+    $discount = floatval($request_data -> discount);
 
-
-        $sql = "INSERT INTO promotion
-          (seasonID ,roomTypeID,promotionName, startDate, endDate, discount) 
-          VALUES ('$seasonID' ,'$roomTypeID','$promotionName', '$startDate', '$endDate','$discount')";
+    // Check Promotion Date
+    $dataCheck = $startDate;
+    while($dataCheck <= $endDate){
+        $sql = "SELECT *
+                FROM promotion_view
+                WHERE '$dataCheck' BETWEEN startDate AND endDate";
+                
         $query = $connect->query($sql);
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+            $data[] = $row;
+        }
+        
+        $dataCheck = date('Y-m-d',strtotime($dataCheck. '1 days'));
+      }
+    
+    if($query->rowCount() == 0){
+      $sql = "INSERT INTO promotion
+      (seasonID ,roomTypeID,promotionName, startDate, endDate, discount) 
+      VALUES ('$seasonID' ,'$roomTypeID','$promotionName', '$startDate', '$endDate','$discount')";
+      $query = $connect->query($sql);
 
-        if($query){
-            $out['message'] = "Promotion Added Successfully";
-            $out['success'] = true;
-        }
-        else{
-            $out['message'] = "Could not add promotion";
-        }
+      if($query){
+          $out['message'] = "Promotion Added Successfully";
+          $out['success'] = true;
+      }
+      else{
+          $out['message'] = "Could not add promotion";
+      }
       
-      echo json_encode($out);
+    }
+    else{
+      $out['message'] = "Already have this promotion during this date";
+    }
+
+      
+    
+  
+  echo json_encode($out);
      
 }
 ?>
