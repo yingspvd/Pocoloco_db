@@ -19,6 +19,11 @@ if($request_data -> action == "getInformation"){
         $data[] = $row;
     }
 
+    if($query->rowCount() == 0)
+    {
+        $data = "";
+    }
+    
     echo json_encode($data);  
     
 }
@@ -28,12 +33,12 @@ if($request_data -> action == "getInformation"){
         $roomID = intval($request_data -> roomID);
 
         // Get Room Price
-        $sql = "SELECT b.roomID,r.roomType AS name,DATEDIFF( b.checkOut, b.checkIn) AS amount,b.price AS total
+        $sql = "SELECT b.bookingID,b.roomID,r.roomType AS name,DATEDIFF( b.checkOut, b.checkIn) AS amount,b.price AS total
                 FROM bookingdetail b,hotelroom h,roomdescription r
                 WHERE b.roomID = h.roomID AND
                     h.roomTypeID = r.roomTypeID AND
                     b.status = 'I' AND
-                    b.roomID = $roomID";
+                    b.roomID = $roomID" ;
                     
         $query = $connect->query($sql);
         
@@ -41,13 +46,14 @@ if($request_data -> action == "getInformation"){
             $data[] = $row;
         }
 
+        $bookingID = $data[0]["bookingID"];
         $total = $data[0]["total"] * 20 / 100;
         
         // Get Date
         $sql = "SELECT checkIn,checkOut
                 FROM bookingdetail 
                 WHERE status = 'I' AND
-                    roomID = 1311 ";
+                    roomID = $roomID ";
                     
         $query = $connect->query($sql);
         
@@ -60,9 +66,10 @@ if($request_data -> action == "getInformation"){
         // Get Service Price
         $dataCheck = $checkIn;
         while($dataCheck <= $checkOut){
-            $sql = "SELECT r.roomID,s.name,r.amount,r.total
-                    FROM roomservice r, servicelist s
+            $sql = "SELECT b.bookingID,r.roomID,s.name,r.amount,r.total
+                    FROM roomservice r, servicelist s, bookingDetail b
                     WHERE r.serviceID = s.serviceID AND
+                        b.roomID = r.roomID AND
                         r.dateTime LIKE '$dataCheck%' AND
                         r.roomID = $roomID";
                     
@@ -75,7 +82,7 @@ if($request_data -> action == "getInformation"){
           }
 
 
-        $deposit = array("roomID"=> "$roomID", "name" => "Deposit","amount" => "1" ,"total" => "-$total");
+        $deposit = array("bookingID"=>$bookingID,"roomID"=> "$roomID", "name" => "Deposit","amount" => "1" ,"total" => "-$total");
         $data[] = $deposit;
        
         echo json_encode($data);  
@@ -114,6 +121,14 @@ if($request_data -> action == "getInformation"){
 
             $query = $connect->query($sql);
                     
+            
+            // Update Status Check Out
+            $sql = "UPDATE bookingdetail
+                    SET status = 'O'
+                    WHERE roomID = $roomID AND
+                        status = 'I'";
+            $query = $connect->query($sql);
+            
             if($query){
                 $out['success'] = true;
                 $out['message'] = "Payment Successful";

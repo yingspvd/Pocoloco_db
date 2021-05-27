@@ -67,6 +67,7 @@ if($request_data-> action == "addPromotion")
       $sql = "INSERT INTO promotion
       (seasonID ,roomTypeID,promotionName, startDate, endDate, discount) 
       VALUES ('$seasonID' ,'$roomTypeID','$promotionName', '$startDate', '$endDate','$discount')";
+      
       $query = $connect->query($sql);
 
       if($query){
