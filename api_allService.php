@@ -20,34 +20,26 @@ if($request_data->action == 'searchService')
     $search = $request_data->search;
     $filter = $request_data->filter;
     $sort = $request_data->sort;
+    $direction = $request_data->direction;
 
-    if($filter == "all" && $sort == "all")
-    {
-        $sql = "SELECT * FROM service_view 
-                WHERE   type LIKE '$search%'OR
-                        name LIKE '$search%'OR
-                        servicePrice LIKE '$search%'
-                ORDER BY type,name,servicePrice 
+    if($direction == "up"){
+        $sql = "SELECT * 
+                FROM service_view 
+                WHERE   $filter LIKE '$search%'
+                ORDER BY $sort DESC
                 ";
     }
-    elseif($filter == "all" && $sort != "all"){
-        $sql = "SELECT * FROM service_view 
-                WHERE  type LIKE '$search%'OR
-                        name LIKE '$search%'OR
-                        servicePrice LIKE '$search%'
+    else if($direction == "down"){
+        $sql = "SELECT * 
+                FROM service_view 
+                WHERE   $filter LIKE '$search%'
                 ORDER BY $sort
-                ";
-    }
-    elseif($filter != "all" && $sort == "all"){
-        $sql = "SELECT * FROM service_view 
-                WHERE $filter LIKE '$search%'
-                ORDER BY type,name,servicePrice 
                 ";
     }
     else{
-        $sql = "SELECT * FROM service_view  
-                WHERE $filter LIKE '$search%'
-                ORDER BY $sort
+        $sql = "SELECT * 
+                FROM service_view  
+                ORDER BY name
                 ";
     }
     
