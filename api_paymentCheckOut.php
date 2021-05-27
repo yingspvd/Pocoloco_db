@@ -5,7 +5,7 @@ $request_data=json_decode(file_get_contents("php://input"));
 if($request_data -> action == "getInformation"){
 
     $roomID = $request_data -> roomID;
-    $sql = "SELECT c.customerID,c.firstName,c.lastName,c.phone
+    $sql = "SELECT b.bookingID,c.customerID,c.firstName,c.lastName,c.phone
             FROM customer c,bookingdetail d,booking b
             WHERE d.bookingID = b.bookingID AND
                 b.customerID = c.customerID AND

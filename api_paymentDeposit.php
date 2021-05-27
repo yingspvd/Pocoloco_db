@@ -5,6 +5,7 @@ $request_data=json_decode(file_get_contents("php://input"));
 if($request_data -> action == "getInformation"){
     $bookingID = intval($request_data -> bookingID);
 
+    // check in payment table
     $sql = "SELECT *
             FROM payment p, bookingdetail b
             WHERE p.bookingDetailID = b.bookingDetailID AND
@@ -69,10 +70,11 @@ if($request_data->action=="confirmInf"){
     $methodID = intval($request_data -> method);
     $date = $request_data -> date;
     
-    $sql = "SELECT b.bookingDetailID,( r.roomPrice * 20 /100) AS amountPaid
+    $sql = "SELECT b.bookingDetailID,( b.price * 20 /100) AS amountPaid
             FROM bookingdetail b, hotelroom h, roomdescription r
             WHERE b.roomID = h.roomID AND
                 h.roomTypeID = r.roomTypeID AND
+                status = 'R' AND
                 bookingID = $bookingID";
 
     $query = $connect->query($sql);
