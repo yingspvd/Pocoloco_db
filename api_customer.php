@@ -4,10 +4,10 @@ $request_data=json_decode(file_get_contents("php://input"));
 
 if($request_data -> action == "getAllCustomer"){
     
-    $sql = "SELECT c.*, n.numberVisit
-            FROM customer c LEFT JOIN
-            numberVisit n ON c.customerID = n.customerID
-            ORDER BY n.numberVisit DESC, customerID";
+    $sql = "SELECT *
+            FROM customer_view
+            ORDER BY rank
+            ";
                     
     $query = $connect->query($sql);
     
@@ -28,107 +28,27 @@ if($request_data->action=="searchData"){
     $search = $request_data->search;
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
-
-    ///////// แก้ให้เป็น expense ///////////////
-    if($sort == "rank"){
-        $sort = "customerID";
-    }
-    if($filter == "rank"){
-        $filter = "customerID";
-    }
+    $direction = $request_data -> direction;
     
-    if($sort == "all"  && $filter == "all" ){
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE 
-                    (c.customerID LIKE '%$search%' OR c.firstName LIKE '$search%' OR
-                    c.lastName LIKE '$search%' )
-                    ORDER BY n.numberVisit DESC,customerID";
+    if($direction == "up"){
+        $sql = "SELECT * 
+                FROM customer_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort DESC";
     }
-    
-    elseif($sort != "all" && $sort != "numberVisit"  && $filter == "all" ){
-        $sql = "SELECT c.*, n.numberVisit
-            FROM customer c LEFT JOIN
-            numberVisit n ON c.customerID = n.customerID
-            WHERE 
-            	(c.customerID LIKE '%$search%' OR c.firstName LIKE '$search%' OR
-                c.lastName LIKE '$search%' )
-            ORDER BY c.$sort";
+    else if($direction == "down"){
+        $sql = "SELECT * 
+                FROM customer_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort";
     }
-
-    elseif($sort == "numberVisit"  && $filter == "all" ){
-        $sql = "SELECT c.*, n.numberVisit
-            FROM customer c LEFT JOIN
-            numberVisit n ON c.customerID = n.customerID
-            WHERE 
-            	(c.customerID LIKE '%$search%' OR c.firstName LIKE '$search%' OR
-                c.lastName LIKE '$search%' )
-                ORDER BY n.numberVisit DESC,customerID";
-    }
-    
-    elseif($sort == "numberVisit"  && $filter != "all" && ($filter != 'customerID')){
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE (c.$filter LIKE '$search%' )
-                ORDER BY n.numberVisit DESC,customerID";
-    }
-
-    elseif($sort == "numberVisit"  && $filter != "all" && ($filter == 'customerID')){
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE (c.$filter LIKE '%$search%' )
-                ORDER BY n.numberVisit DESC,customerID";
-    }
-    
-    elseif(($sort == "all") && ($filter == "numberVisit")){
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE 
-                    (n.$filter LIKE '$search%' )
-                ORDER BY n.numberVisit DESC,customerID";
-    }
-    
-    elseif(($sort == "all") && ($filter != "all") && ($filter != 'customerID')){
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE   
-                    (c.$filter LIKE '$search%' )
-                ORDER BY n.numberVisit DESC,customerID";
-    }
-
-    elseif(($sort == "all") && ($filter == 'customerID')){
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE   
-                    (c.$filter LIKE '%$search%' )
-                ORDER BY n.numberVisit DESC,customerID";
-    }
-
-    elseif(($sort != "all") && ($filter != 'all') && ($filter == 'customerID')){
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE   
-                    (c.$filter LIKE '%$search%' )
-                ORDER BY c.$sort";
-    }
-    
     else{
-        $sql = "SELECT c.*, n.numberVisit
-                FROM customer c LEFT JOIN
-                numberVisit n ON c.customerID = n.customerID
-                WHERE 
-                    (c.$filter LIKE '$search%' )
-                ORDER BY c.$sort";
+        $sql = "SELECT *
+            FROM customer_view
+            ORDER BY rank
+            ";
     }
-
-            
+    
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
