@@ -35,63 +35,34 @@ if($request_data->action=="searchData"){
     $search = $request_data->search;
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
+    $direction = $request_data -> direction;
+     
+    if($direction == "up"){
+        $out = 1;
+        $sql="SELECT *
+                FROM room_view
+                WHERE $filter LIKE '$search%' 
+                ORDER BY $sort DESC";
+    }
+    else if($direction == "down"){
+        $out = 2;
+        $sql="SELECT *
+                FROM room_view
+                WHERE $filter LIKE '$search%' 
+                ORDER BY $sort";
+    }
 
-    if(($sort == "all" || $sort == "roomID")  && $filter == "all"){
-        $query="SELECT r.roomID, d.roomType, d.roomPrice, d.capacity, d.size
-                FROM hotelroom r, roomdescription d
-                WHERE r.roomTypeID = d.roomTypeID AND (r.roomID LIKE '$search%' OR d.roomType LIKE '$search%' 
-                                                        or d.roomPrice LIKE '$search%')
-                GROUP BY r.roomID
-                ORDER BY r.roomID";
-    }
-    else if($sort != "all"  && $filter == "all"){
-        $query="SELECT r.roomID, d.roomType, d.roomPrice, d.capacity, d.size
-                FROM hotelroom r, roomdescription d
-                WHERE r.roomTypeID = d.roomTypeID AND (r.roomID LIKE '$search%' OR d.roomType LIKE '$search%' 
-                                                        or d.roomPrice LIKE '$search%')
-                GROUP BY r.roomID
-                ORDER BY d.$sort";
-    }
-    else if(($sort == "all" || $sort == "roomID") && $filter == "roomID"){
-        $query="SELECT r.roomID, d.roomType, d.roomPrice, d.capacity, d.size
-                FROM hotelroom r, roomdescription d
-                WHERE r.roomTypeID = d.roomTypeID AND (r.roomID LIKE '$search%')
-                GROUP BY r.roomID
-                ORDER BY r.roomID";
-    }
-    else if($sort != "all" && $filter == "roomID"){
-        $query="SELECT r.roomID, d.roomType, d.roomPrice, d.capacity, d.size
-                FROM hotelroom r, roomdescription d
-                WHERE r.roomTypeID = d.roomTypeID AND (r.roomID LIKE '$search%')
-                GROUP BY r.roomID
-                ORDER BY d.$sort";
-    }
-    else if(($sort == "all" || $sort == "roomID") && ($filter != "roomID" || $filter != "all")){
-        $query="SELECT r.roomID, d.roomType, d.roomPrice, d.capacity, d.size
-                FROM hotelroom r, roomdescription d
-                WHERE r.roomTypeID = d.roomTypeID AND (d.$filter LIKE '$search%')
-                GROUP BY r.roomID
-                ORDER BY r.roomID";
-    }
-    else if($sort != "all" && ($filter != "roomID" || $filter != "all")){
-        $query="SELECT r.roomID, d.roomType, d.roomPrice, d.capacity, d.size
-                FROM hotelroom r, roomdescription d
-                WHERE r.roomTypeID = d.roomTypeID AND (d.$filter LIKE '$search%')
-                GROUP BY r.roomID
-                ORDER BY d.$sort";
-    }
-    
-    $statement=$connect->prepare($query);
-    $statement->execute();  
-    while($row = $statement->fetch(PDO::FETCH_ASSOC)){
-        $data[]=$row;
-    }
-    if($statement->rowCount() == 0)
+    $query = $connect->query($sql);
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+            $data[] = $row;
+        }
+        
+    if($query->rowCount() == 0)
     {
         $data = "";
     }
     
-    echo json_encode($data);   //table
+    echo json_encode($data);
 }
 
 
