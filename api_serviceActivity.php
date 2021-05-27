@@ -4,10 +4,9 @@ $request_data=json_decode(file_get_contents("php://input"));
 
 if($request_data -> action == "getServiceActivity"){
     
-    $sql = "SELECT CAST(DateTime As date) AS date,roomID,SUM(total) AS total
-            FROM roomservice
-            GROUP BY date,roomID
-            ORDER BY DateTime DESC";
+    $sql = "SELECT *
+            FROM serviceactivity_view
+            ORDER BY date DESC";
                     
     $query = $connect->query($sql);
     
@@ -55,61 +54,27 @@ if($request_data->action == 'searchActivity')
     $search = $request_data->search;
     $filter = $request_data->filter;
     $sort = $request_data->sort;
-    
-    if($search == ""){$out=5;
-        $sql = "SELECT CAST(DateTime As date) AS date,roomID,SUM(total) AS total
-            FROM roomservice
-            GROUP BY date,roomID
+    $direction = $request_data->direction;
+
+    if($direction == "up"){
+        $sql = "SELECT *
+            FROM serviceactivity_view
+            WHERE $filter LIKE '$search%'
+            ORDER BY $sort DESC";
+    }
+    else if($direction == "down"){
+        $sql = "SELECT *
+            FROM serviceactivity_view
+            WHERE $filter LIKE '$search%'
+            ORDER BY $sort";
+    }
+    else{
+        $sql = "SELECT *
+            FROM serviceactivity_view
             ORDER BY date DESC";
     }
     
-    else{
-        if($filter == "roomID" || $filter == "all"){
-            $search = intval($request_data->search) ;
-        }
-        
-        if(($filter == "all" || $filter == "roomID") && ($sort == "all" || $sort == "date"))
-        {
-            $sql = "SELECT CAST(DateTime As date) AS date,roomID,SUM(total) AS total
-                    FROM roomservice
-                    WHERE roomID LIKE '$search'
-                    GROUP BY date,roomID
-                    ORDER BY DateTime DESC 
-                    ";
-        }
     
-        if($filter == "date" && ($sort == "all" || $sort == "date"))
-        {
-            $sql = "SELECT CAST(DateTime As date) AS date,roomID,SUM(total) AS total
-                    FROM roomservice
-                    WHERE DateTime LIKE '$search%'
-                    GROUP BY date,roomID
-                    ORDER BY DateTime DESC 
-                    ";
-        }
-    
-        if($filter == "date" && $sort == "roomID" )
-        {
-            $sql = "SELECT CAST(DateTime As date) AS date,roomID,SUM(total) AS total
-                    FROM roomservice
-                    WHERE DateTime LIKE '$search%'
-                    GROUP BY date,roomID
-                    ORDER BY roomID
-                    ";
-        }
-    
-        if(($filter == "all" || $filter == "roomID") && $sort == "roomID" )
-        {
-            $sql = "SELECT CAST(DateTime As date) AS date,roomID,SUM(total) AS total
-                    FROM roomservice
-                    WHERE roomID LIKE '$search'
-                    GROUP BY date,roomID
-                    ORDER BY roomID 
-                    ";
-        }
-        
-    }
-   
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
