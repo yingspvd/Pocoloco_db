@@ -3,11 +3,9 @@ require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 
 if($request_data -> action == "getPromotion"){
-    $sql = "SELECT p.promotionID,s.seasonName,p.promotionName,r.roomType,p.discount, p.startDate, p.endDate
-            FROM promotion p, season s, roomdescription r
-            WHERE p.seasonID = s.seasonID AND
-                p.roomTypeID = r.roomTypeID
-            ORDER BY p.promotionID DESC";
+    $sql = "SELECT *
+            FROM promotion_view
+            ORDER BY promotionID DESC";
                     
     $query = $connect->query($sql);
     
@@ -22,58 +20,26 @@ if($request_data->action=="searchData"){
     $search = $request_data->search;
     $filter = $request_data->filter;
     $sort = $request_data->sort;
+    $direction = $request_data->direction;
     
-    if($filter == "all" && $sort == "all"){
-        $sql="SELECT *
-            FROM promotion_view
-            WHERE seasonName LIKE '$search%' OR 
-                promotionName LIKE '$search%' OR 
-                roomType LIKE '$search%' OR 
-                discount LIKE '$search%' OR 
-                startDate LIKE '$search%' OR 
-                endDate LIKE '$search%'
-            ORDER BY promotionID DESC";
+    if($direction == "up"){
+        $sql = "SELECT *
+                FROM promotion_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort DESC";
     }
-    elseif($filter != "all" && $sort == "all"){
-        $sql="SELECT *
-            FROM promotion_view
-            WHERE $filter LIKE '$search%' 
-            ORDER BY promotionID DESC";
-    }
-    elseif($filter == "all" && ( $sort == "discount" || $sort == "startDate" || $sort == "endDate" )){
-        $sql="SELECT *
-            FROM promotion_view
-            WHERE seasonName LIKE '$search%' OR 
-                promotionName LIKE '$search%' OR 
-                roomType LIKE '$search%' OR 
-                discount LIKE '$search%' OR 
-                startDate LIKE '$search%' OR 
-                endDate LIKE '$search%'
-            ORDER BY $sort DESC";
-    }
-    elseif($filter == "all" && ( $sort != "discount" || $sort != "startDate" || $sort != "endDate" )){
-        $sql="SELECT *
-            FROM promotion_view
-            WHERE seasonName LIKE '$search%' OR 
-                promotionName LIKE '$search%' OR 
-                roomType LIKE '$search%' OR 
-                discount LIKE '$search%' OR 
-                startDate LIKE '$search%' OR 
-                endDate LIKE '$search%'
-            ORDER BY $sort";
-    }
-    elseif($filter != "all" && ( $sort == "discount" || $sort == "startDate" || $sort == "endDate" )){
-        $sql="SELECT *
-            FROM promotion_view
-            WHERE $filter LIKE '$search%'
-            ORDER BY $sort DESC";
+    else if($direction == "down"){
+        $sql = "SELECT *
+                FROM promotion_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort";
     }
     else{
-        $sql="SELECT *
-            FROM promotion_view
-            WHERE $filter LIKE '$search%' 
-            ORDER BY $sort";
+        $sql = "SELECT *
+        FROM promotion_view
+        ORDER BY promotionID DESC";
     }
+  
  
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
