@@ -9,81 +9,34 @@ if($request_data->action=="getSearchData"){
     $search = $request_data->search;
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
-
-    if($sort == "all" && $filter == "all"){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE r.roleID LIKE '$search%' OR r.roleName LIKE '$search%' OR r.salary LIKE '$search%' 
-            OR r.bonusRate LIKE '$search%' OR d.departmentName  LIKE '%$search%'
-            GROUP BY r.roleID 
-            ORDER BY r.roleID,d.departmentName,r.roleName,r.salary DESC,r.bonusRate DESC"; 
-    }    
-    elseif($sort == "all" && $filter != "all" && $filter == "departmentName" ){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE  d.$filter  LIKE '%$search%'
-            GROUP BY r.roleID 
-            ORDER BY r.roleID,d.departmentName,r.roleName,r.salary DESC,r.bonusRate DESC"; 
+    $direction = $request_data -> direction;
+    
+    if($direction == "up"){
+        $sql = "SELECT *
+                FROM role_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort DESC";
     }
-    elseif($sort == "all" && $filter != "all" && $filter != "departmentName" ){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE  r.$filter  LIKE '$search%'
-            GROUP BY r.roleID 
-            ORDER BY r.roleID,d.departmentName,r.roleName,r.salary DESC,r.bonusRate DESC"; 
-    }
-    elseif($sort != "all" && $sort == "departmentName" && $filter == "all"  ){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE r.roleID LIKE '$search%' OR r.roleName LIKE '$search%' OR r.salary LIKE '$search%' 
-            OR r.bonusRate LIKE '$search%' OR d.departmentName  LIKE '%$search%'
-            GROUP BY r.roleID 
-            ORDER BY d.departmentName"; 
-    }
-    elseif($sort != "all" && $sort != "departmentName" && $filter == "all"  ){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE r.roleID LIKE '$search%' OR r.roleName LIKE '$search%' OR r.salary LIKE '$search%' 
-            OR r.bonusRate LIKE '$search%' OR d.departmentName  LIKE '%$search%'
-            GROUP BY r.roleID 
-            ORDER BY r.$sort"; 
-    }
-    elseif($sort != "all" && $sort == "departmentName" && $filter != "all"  && $filter != "departmentName"){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE r.$filter LIKE '$search%' 
-            GROUP BY r.roleID 
-            ORDER BY d.departmentName"; 
-    }
-    elseif($sort != "all" && $sort == "departmentName" && $filter != "all"  && $filter == "departmentName"){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE d.$filter LIKE '$search%' 
-            GROUP BY r.roleID 
-            ORDER BY d.departmentName"; 
-    }
-    elseif($sort != "all" && $sort != "departmentName" && $filter != "all"  && $filter == "departmentName"){
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE d.$filter LIKE '$search%' 
-            GROUP BY r.roleID 
-            ORDER BY r.$sort"; 
+    else if($direction == "down"){
+        $sql = "SELECT *
+                FROM role_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort";
     }
     else{
-        $query="SELECT r.roleID, d.departmentName , r.roleName, r.salary, r.bonusRate
-            FROM role r, department d
-            WHERE r.$filter LIKE '$search%' 
-            GROUP BY r.roleID 
-            ORDER BY r.$sort"; 
+        $sql = "SELECT *
+                FROM role_view
+                ORDER BY roleID
+                ";
     }
 
-    $statement=$connect->prepare($query);
-    $statement->execute(); 
-    while($row = $statement->fetch(PDO::FETCH_ASSOC)){
-        $data[]=$row;
+    $query = $connect->query($sql);
+    
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
     }
 
-    if($statement->rowCount() == 0)
+    if($query->rowCount() == 0)
     {
         $data = "";
     } 
@@ -93,10 +46,9 @@ if($request_data->action=="getSearchData"){
 
 if($request_data->action=="getAll"){
     
-    $query="SELECT r.roleID, r.roleName, r.salary, r.bonusRate, d.departmentName 
-            FROM role r, department d
-            WHERE r.departmentID = d.departmentID
-            GROUP BY r.roleID";
+    $query="SELECT *
+            FROM role_view
+            ORDER BY roleID";
     
     $statement=$connect->prepare($query);
     $statement->execute();  
@@ -139,11 +91,17 @@ if($request_data->action == "update"){
     echo json_encode($output);
 }
 
-if($request_data->action == "deleteUser"){
-    $query = "DELETE FROM role WHERE roleID = $request_data->roleID";
-    $statement = $connect -> prepare($query);
-    $statement -> execute();
-    $output = array("message" => "Delete Complete");
-    echo json_encode($output);
+if($request_data->action == "deleteData"){
+    $roleID = intval($request_data -> roleID);
+    $sql = "DELETE FROM role WHERE roleID = $roleID";
+    $query = $connect->query($sql);
+
+    if($query){
+        $out['message'] = "Delete Complete";
+    }
+    else{
+        $out['message'] = "Cannot Delete this role";
+    }
+    echo json_encode($out);
 }
 ?>
