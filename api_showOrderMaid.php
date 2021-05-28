@@ -10,6 +10,11 @@ if($request_data->action == 'getAll') {
     while($row = $query->fetch(PDO::FETCH_ASSOC)) {
         $data[] = $row;
     }
+    if($query->rowCount() == 0)
+    {
+        $data = "";
+    }
+    
     echo json_encode($data);
 }
 if($request_data->action == 'finishOrderMaid')
@@ -34,6 +39,7 @@ if($request_data->action == 'finishOrderMaid')
         else{
         $out['message'] = "Could not update ";
         }
+    
 
     echo json_encode($out); 
 }
