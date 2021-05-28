@@ -5,10 +5,8 @@ $request_data = json_decode(file_get_contents("php://input"));
 
 if($request_data->action == 'getAllService')
 {
-    $sql="SELECT * FROM service_view 
-            WHERE type LIKE 'Food & Beverage'
-            ORDER BY serviceID
-        ";
+    $sql="SELECT * FROM service_view WHERE type LIKE 'Room Facilities' 
+        ORDER BY serviceID";
     $query = $connect->query($sql);
         
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -24,12 +22,17 @@ if($request_data -> action == "searchService"){
     
     $sql = "SELECT serviceID, name, servicePrice
             FROM servicelist
-            WHERE name LIKE '$search%' AND type LIKE 'Food & Beverage' ";
+            WHERE name LIKE '$search%' AND type = 1 ";
                     
     $query = $connect->query($sql);
     
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
+    }
+
+    if($query->rowCount() == 0)
+    {
+        $data = "";
     }
     
     echo json_encode($data);  
