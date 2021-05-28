@@ -7,31 +7,23 @@ if ($request_data->action == "saveData") {
     $employeeID = intval( $request_data->employeeID);
     $roomNumber = intval($request_data->roomNumber);
     $detail = $request_data->detail;
-    $expense = floatval($request_data->expense) ;
+    $expense = floatval($request_data->expense);
     $expenseDate = $request_data->expenseDate;
-
+    $type = intval($request_data -> type) ;
     
-    $sql = "SELECT h.roomID,e.employeeID
-            FROM hotelroom h, employee e
-            WHERE h.roomID =$roomNumber AND e.employeeID = $employeeID
-            ";
+    $sql = "INSERT INTO hotelexpense (employeeID,expenseDate,type,detail,expense) 
+            VALUES ('$employeeID','$expenseDate','$type','$detail','$expense')"; 
     $query = $connect->query($sql);
-    
-    if($query -> rowCount() == 1){
-        
-        $sql = "INSERT INTO hotelexpense (employeeID,roomID,expenseDate,detail,expense) 
-                VALUES ('$employeeID','$roomNumber','$expenseDate','$detail','$expense')"; 
-        $query = $connect->query($sql);
 
-        if($query){
-            $out['message'] = "Added Successfully";
-            $out['success'] = true;
+    if($query){
+        $out['message'] = "Added Successfully";
+        $out['success'] = true;
+    }
+    else{
+        $out['message'] = "Could not add";
         }
-        else{
-            $out['message'] = "Could not add";
-            }
             
-        }
+        
     echo json_encode($out);
 }
 
@@ -55,59 +47,23 @@ if($request_data -> action == "searchData"){
     $search = $request_data->search;
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
+    $direction = $request_data->direction;
 
-   if($filter == "all" && $sort == "all"){
+   if($direction == "up"){
        $sql = "SELECT * FROM expense_view
-                WHERE em_firstname LIKE '$search%' OR 
-                    em_lastname LIKE '$search%' OR
-                    roomID LIKE '$search%' OR 
-                    roomType LIKE '$search%' OR
-                    expenseDate  LIKE '$search%'
-                ORDER BY expenseDate DESC, roomID, expense DESC,roomType
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort DESC
                ";
    }
-   elseif($filter != "all" && $sort == "all"){
-        $sql = "SELECT * FROM expense_view
-                WHERE $filter LIKE '$search%'
-                ORDER BY expenseDate DESC, roomID, expense DESC,roomType
-                ";
-   }
-   elseif($filter == "all" && ($sort == "expenseDate" || $sort == "expense")){
-        $sql = "SELECT * FROM expense_view
-                WHERE em_firstname LIKE '$search%' OR 
-                    em_lastname LIKE '$search%' OR
-                    roomID LIKE '$search%' OR 
-                    roomType LIKE '$search%' OR
-                    expenseDate  LIKE '$search%'
-                ORDER BY $sort DESC
-                ";
-   }
-   elseif($filter == "all" && ($sort != "expenseDate" && $sort != "expense")){
-        $sql = "SELECT * FROM expense_view
-                WHERE em_firstname LIKE '$search%' OR 
-                    em_lastname LIKE '$search%' OR
-                    roomID LIKE '$search%' OR 
-                    roomType LIKE '$search%' OR
-                    expenseDate  LIKE '$search%'
-                ORDER BY $sort
-                ";
-    }
-    elseif($filter != "all" && ($sort == "expenseDate" || $sort == "expense")){
-        $sql = "SELECT * FROM expense_view
-                WHERE $filter LIKE '$search%' 
-                ORDER BY $sort DESC
-                ";
-   }
-    elseif($filter != "all" && ($sort != "expenseDate" && $sort != "expense")){
-        $sql = "SELECT * FROM expense_view
-                WHERE $filter LIKE '$search%' 
-                ORDER BY $sort
-                ";
+   else if($direction == "down"){
+    $sql = "SELECT * FROM expense_view
+             WHERE $filter LIKE '$search%'
+             ORDER BY $sort 
+            ";
     }
     else{
         $sql = "SELECT * FROM expense_view
-                WHERE $filter LIKE '$search%'
-                ORDER BY $sort
+                ORDER BY date DESC
                 ";
     }
 
