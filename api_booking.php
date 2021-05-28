@@ -3,10 +3,8 @@ require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 $data = array();
 
-
-
 if($request_data->action=="getAll"){
-    $query="SELECT * 
+    $query="SELECT *
             FROM booking_view
             ORDER BY bookingID DESC";
     $statement=$connect->prepare($query);
@@ -14,8 +12,11 @@ if($request_data->action=="getAll"){
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
         $data[]=$row;
     }
-    
-    echo json_encode($data);   //table
+
+    $numRow = $statement->rowCount();
+    $data[] = $numRow;
+   
+    echo json_encode($data);   
 }
 
 if($request_data->action=="SearchData"){
@@ -49,8 +50,12 @@ if($request_data->action=="SearchData"){
 
     if($query->rowCount() == 0){
         $data = "";
+        
+    }else{
+        $numRow = $query->rowCount();
+        $data[] = $numRow;
     }
-    
+
     echo json_encode($data);   
 }
 
@@ -82,8 +87,7 @@ if($request_data->action=="getEditDetail"){
         $data['guestLastname']=$row['guestLastname'];
         $data['checkIn']=$row['checkIn'];
         $data['checkOut']=$row['checkOut'];
-        $data['statusRoom']=$row['status'];
-              
+        $data['statusRoom']=$row['status'];       
     }
     
     echo json_encode($data);  
