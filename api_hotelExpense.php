@@ -106,36 +106,30 @@ if($request_data->action == "update"){
 
     $employeeID = intval($request_data -> employeeID);
     $expenseID = intval($request_data->expenseID);
-    $roomID = intval($request_data -> roomID);
+    $type = intval($request_data -> type);
     $detail = $request_data -> detail;
     $expense = floatval($request_data -> expense);
     $expenseDate = $request_data -> expenseDate;
 
-    $sql = "SELECT h.roomID,e.employeeID
-            FROM hotelroom h, employee e
-            WHERE h.roomID = $roomID AND e.employeeID = $employeeID
-            ";
+
+    $sql = "UPDATE hotelexpense 
+                SET  employeeID = '$employeeID',
+                    type = '$type', 
+                    detail = '$detail', 
+                    expense = '$expense', 
+                    expenseDate = '$expenseDate'
+                WHERE expenseID = '$expenseID'";
     $query = $connect->query($sql);
     
-    if($query -> rowCount() == 1){
-        $sql = "UPDATE hotelexpense 
-                    SET  employeeID = '$employeeID',
-                        roomID = '$roomID', 
-                        detail = '$detail', 
-                        expense = '$expense', 
-                        expenseDate = '$expenseDate'
-                    WHERE expenseID = '$expenseID'";
-        $query = $connect->query($sql);
-        
-        if($query){
-            $out['message'] = "Updated Successfully";
-            $out['success'] = true;
-            }
-        else{
-            $out['message'] = "Could not delete ";
+    if($query){
+        $out['message'] = "Updated Successfully";
+        $out['success'] = true;
         }
-        
+    else{
+        $out['message'] = "Could not delete ";
     }
+        
+    
    echo json_encode($out);           
 }
 
