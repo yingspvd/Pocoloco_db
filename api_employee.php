@@ -101,12 +101,21 @@ if($request_data -> action == "updateData"){
             $roleID = $row['roleID'];
         }
 
-        $sql_insert = "UPDATE employee 
+        if($workStatus == "Q"){
+            $sql_insert = "UPDATE employee 
                         SET department = '$department', roleID = '$roleID', shift = '$shift', 
                         em_firstname = '$firstName', em_lastname = '$lastName' , phone = '$phone',
-                        email = '$email', workStatus = '$workStatus'
+                        email = '$email', workStatus = '$workStatus',endDate = CURRENT_DATE()
                         WHERE employeeID = '$employeeID'";
-        
+        }
+        else{
+            $sql_insert = "UPDATE employee 
+            SET department = '$department', roleID = '$roleID', shift = '$shift', 
+            em_firstname = '$firstName', em_lastname = '$lastName' , phone = '$phone',
+            email = '$email', workStatus = '$workStatus'
+            WHERE employeeID = '$employeeID'";
+        }
+
         $query = $connect->query($sql_insert);
 
         if($query){
