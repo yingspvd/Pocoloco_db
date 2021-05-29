@@ -18,65 +18,42 @@ if($request_data-> action == "addRole")
     $salary = $request_data -> salary;
     $bonusRate = $request_data -> bonusRate;
 
-      if($departmentID=='') {
-        $out['departmentID'] = true;
-        $out['message'] = "DepartmentID is required";
-      }
+      
+    $departmentID = intval($departmentID);
+    $roleName = ucfirst($roleName);
+    $salary = intval($salary);
+    $bonusRate = floatval($bonusRate);  
+          
+      //Query RoleID
+      $sql_roleID = "SELECT MAX(roleID) AS roleID FROM role WHERE departmentID = $departmentID";
+      $query = $connect->query($sql_roleID);
+      while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+          $data[] = $row;
+          }
 
-      else if ($roleName=='') {
-        $out['roleName'] = true;
-        $out['message'] = "Role Name is required";
-      }
+        //Set EmployeeID
+          if($data[0]["roleID"] == 0){
+            $roleID = ($departmentID * 10) + 1;
+          }
+          else{
+            $roleID = $data[0]["roleID"] + 1;
+          }
 
-      else if($salary=='') {
-        $out['salary'] = true;
-        $out['message'] = "Salary Name is required";
-      }
+      $sql = "INSERT INTO role
+            (roleID ,departmentID,roleName, salary, bonusRate) 
+            VALUES ('$roleID' ,'$departmentID','$roleName', '$salary','$bonusRate')";
+      $query = $connect->query($sql);
 
-      else if ((is_numeric($salary) == false)) {
-        $out['salary'] = true;
-        $out['message'] = "Salary is not correct";  
-      }
 
-      else if($bonusRate =='') {
-        $out['bonusRate'] = true;
-        $out['message'] = "Bonus Rate is required";
-      }
-
-      else {
-      $departmentID = intval($departmentID);
-      $roleName = ucfirst($roleName);
-      $salary = intval($salary);
-      $bonusRate = floatval($bonusRate);  
-            
-        //Query RoleID
-        $sql_roleID = "SELECT MAX(roleID) AS roleID FROM role WHERE departmentID = $departmentID";
-        $query = $connect->query($sql_roleID);
-        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-            $data[] = $row;
-            }
-  
-          //Set EmployeeID
-            if($data[0]["roleID"] == 0){
-              $roleID = ($departmentID * 10) + 1;
-            }
-            else{
-              $roleID = $data[0]["roleID"] + 1;
-            }
-
-        $sql = "INSERT INTO role
-              (roleID ,departmentID,roleName, salary, bonusRate) 
-              VALUES ('$roleID' ,'$departmentID','$roleName', '$salary','$bonusRate')";
-        $query = $connect->query($sql);
-
-        if($query){
-          $out['message'] = "User Added Successfully";
-        }
-        else{
-          $out['error'] = true;
-          $out['message'] = "Could not add User";
-        }
-      }
+      if($query){
+        $out['message'] = "Added Successfully";
+        $out['success'] = true;
+    }
+    else{
+        $out['message'] = "Could not add this role";
+        $out['success'] = false;
+    }
+      
     echo json_encode($out);
      
 }
