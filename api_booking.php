@@ -13,8 +13,10 @@ if($request_data->action=="getAll"){
         $data[]=$row;
     }
 
-    $numRow = $statement->rowCount();
-    $data[] = $numRow;
+    if($statement->rowCount() == 0){
+        $data = "";
+        
+    }
    
     echo json_encode($data);   
 }
@@ -51,10 +53,8 @@ if($request_data->action=="SearchData"){
     if($query->rowCount() == 0){
         $data = "";
         
-    }else{
-        $numRow = $query->rowCount();
-        $data[] = $numRow;
     }
+  
 
     echo json_encode($data);   
 }
@@ -70,7 +70,10 @@ if($request_data->action=="getBookingDetail"){
        
         $data[]=$row;      
     }
-    
+    if($statement->rowCount() == 0){
+        $data = "";
+        
+    }
     echo json_encode($data);   
 }
 
@@ -89,7 +92,10 @@ if($request_data->action=="getEditDetail"){
         $data['checkOut']=$row['checkOut'];
         $data['statusRoom']=$row['status'];       
     }
-    
+    if($statement->rowCount() == 0){
+        $data = "";
+        
+    }
     echo json_encode($data);  
 }
 
