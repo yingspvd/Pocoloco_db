@@ -3,13 +3,26 @@ require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 
 if($request_data -> action == "getEmployee"){
-    $sql = "SELECT e.employeeID,e.em_firstname,e.em_lastname,d.departmentName,
-            r.roleName,r.salary, e.workStatus,e.shift,e.startDate,
-            e.identification,e.gender,e.DOB,e.email,e.phone,
-            (EXTRACT(YEAR FROM CURRENT_DATE) - EXTRACT(YEAR FROM e.startDate)) AS 'duration'
-            FROM employee e,department d,role r
-            WHERE e.department = d.departmentID AND
-                  e.roleID = r.roleID";
+    
+    $sql = "SELECT *
+            FROM employee_view
+            ORDER BY employeeID DESC";
+                    
+    $query = $connect->query($sql);
+    
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);   
+} 
+if($request_data -> action == "getEmployeeManager"){
+    $department = $request_data -> department;
+
+    $sql = "SELECT *
+            FROM employee_view
+            WHERE departmentName = '$department'
+            ORDER BY roleName, employeeID DESC";
                     
     $query = $connect->query($sql);
     
@@ -33,21 +46,24 @@ if($request_data -> action == "getDepartment"){
 
 if($request_data-> action == "getRole")
 {
-    // query
     $department = $request_data -> department;
     
-    $sql = "SELECT roleName,roleID 
+    $sql = "SELECT roleName 
             FROM role 
-            WHERE departmentID = 
+            WHERE departmentID IN 
                 (SELECT departmentID 
                 FROM department 
                 WHERE departmentName = '$department')";
     $query = $connect->query($sql);
     
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-        $data[] = $row;
+        $data[] = $row["roleName"];
     }
 
+    if($query->rowCount() == 0){
+        $data = "";
+        
+    }
     echo json_encode($data);
 
 }
@@ -70,11 +86,11 @@ if($request_data -> action == "updateData"){
 
         $sql = "SELECT d.departmentID,r.roleID 
                 FROM department d,role r 
-                WHERE d.departmentID = (SELECT departmentID 
+                WHERE d.departmentID IN (SELECT departmentID 
                                         FROM department 
                                         WHERE departmentName = '$department') 
                         AND
-                        r.roleID = (SELECT roleID 
+                        r.roleID IN (SELECT roleID 
                                     FROM role 
                                     WHERE roleName = '$role')";
 
@@ -84,7 +100,6 @@ if($request_data -> action == "updateData"){
             $department = $row['departmentID'];
             $roleID = $row['roleID'];
         }
-
 
         $sql_insert = "UPDATE employee 
                         SET department = '$department', roleID = '$roleID', shift = '$shift', 
@@ -106,50 +121,92 @@ if($request_data -> action == "updateData"){
     echo json_encode($out);
 }
 
+if($request_data -> action == "updateDataManager"){
+    $employeeID = intval($request_data -> employeeID);
+    $shift = intval($request_data -> shift) ;
+    $workStatus = $request_data -> workStatus;
+
+    $sql = "UPDATE employee
+            SET workStatus = '$workStatus' , shift = '$shift'
+            WHERE employeeID = $employeeID";
+
+    $query = $connect->query($sql);
+
+    if($query){
+        $out['message'] = "Updated Successfully";
+        $out['success'] = true;
+    }
+    else{
+        $out['message'] = "Could not update";
+        $out['success'] = false;
+    }
+    echo json_encode($out);
+}
+
 if($request_data -> action == "searchData"){
     $search = $request_data -> search;
     $filter = $request_data -> filter;
     $sort = $request_data -> sort;
+    $direction = $request_data -> direction;
 
-    if($filter == "all" && $sort == "all"){
-        $sql = "SELECT * FROM employee_view
-                WHERE employeeID LIKE '$search%' OR 
-                    em_firstname LIKE '$search%' OR 
-                    departmentName LIKE '$search%' OR 
-                    roleName LIKE '$search%' OR 
-                    workStatus LIKE '$search%' OR 
-                    salary LIKE '$search%' OR 
-                    duration LIKE '$search%' 
-                    ORDER BY employeeID,departmentName,em_firstname,
-                            roleName,workStatus,salary DESC,duration DESC
-                ";
+    if($direction == "up"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort DESC";
     }
-    elseif($filter != "all" && $sort == "all"){
-        $sql = "SELECT * FROM employee_view
-        WHERE $filter LIKE '$search%' 
-        ORDER BY employeeID,departmentName,em_firstname,
-                roleName,workStatus,salary DESC,duration DESC
-        ";
-    }
-    elseif($filter != "all" && $sort == "salary"){
-        $sql = "SELECT * FROM employee_view
-        WHERE $filter LIKE '$search%' 
-        ORDER BY salary DESC
-        ";
-    }
-    elseif($filter != "all" && $sort == "duration"){
-        $sql = "SELECT * FROM employee_view
-                WHERE $filter LIKE '$search%' 
-                ORDER BY duration DESC
-                ";
+    else if($direction == "down"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE $filter LIKE '$search%'
+                ORDER BY $sort";
     }
     else{
-        $sql = "SELECT * FROM employee_view
-                WHERE $filter LIKE '$search%' 
-                ORDER BY $sort
-                "; 
+        $sql = "SELECT *
+                FROM employeeview
+                ORDER BY employeeID DESC";
+    }
+    
+    $query = $connect->query($sql);
+            
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row; 
     }
 
+    if($query->rowCount() == 0)
+    {
+        $data = "";
+    } 
+    
+    echo json_encode($data);
+}
+
+if($request_data -> action == "searchDataManager"){
+    $search = $request_data -> search;
+    $filter = $request_data -> filter;
+    $sort = $request_data -> sort;
+    $direction = $request_data -> direction;
+    $department = $request_data -> department;
+
+    if($direction == "up"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE $filter LIKE '$search%' AND departmentName = '$department'
+                ORDER BY $sort DESC";
+    }
+    else if($direction == "down"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE $filter LIKE '$search%' AND departmentName = '$department'
+                ORDER BY $sort";
+    }
+    else{
+        $sql = "SELECT *
+                FROM employeeview
+                WHERE departmentName = '$department'
+                ORDER BY employeeID DESC";
+    }
+    
     $query = $connect->query($sql);
             
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
