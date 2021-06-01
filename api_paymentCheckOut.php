@@ -85,7 +85,7 @@ if($request_data -> action == "getInformation"){
         $deposit = array("bookingID"=>$bookingID,"roomID"=> "$roomID", "name" => "Deposit","amount" => "1" ,"total" => "-$total");
         $data[] = $deposit;
        
-        echo json_encode($data);  
+        echo json_encode($data);   
 
     }
 
@@ -141,6 +141,21 @@ if($request_data -> action == "getInformation"){
         }
         echo json_encode($out); 
         
+    }
+
+    if($request_data -> action == "getChargeRate"){
+        
+        $sql = "SELECT chargeRate
+                FROM payment_method
+                WHERE methodID = 3";
+
+        $query = $connect->query($sql);
+        
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+            $data = $row["chargeRate"];
+        }   
+        
+        echo json_encode($data); 
     }
 
 ?>
