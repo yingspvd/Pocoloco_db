@@ -5,8 +5,17 @@ $request_data = json_decode(file_get_contents("php://input"));
 
 if($request_data->action == 'getAllService')
 {
-    $sql="SELECT * FROM service_view
-        ORDER BY serviceID";
+    $role = $request_data-> role;
+    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+        $sql="SELECT * FROM service_view";
+    }
+    else if($role == "Manager Chef" || $role == "Chef"){
+        $sql="SELECT * FROM service_view WHERE type LIKE 'Food & Beverage'";
+    }
+    else if($role == "Manager Maid" || $role == "Maid"){
+        $sql="SELECT * FROM service_view WHERE type LIKE 'Room Facilities'";
+    }
+
     $query = $connect->query($sql);
         
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -19,11 +28,20 @@ if($request_data->action == 'getAllService')
 if($request_data -> action == "searchService"){
 
     $search = $request_data -> search;
+    $role = $request_data -> role;
+    $type = $request_data -> type;
     
-    $sql = "SELECT serviceID, name, servicePrice
+    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+        $sql = "SELECT serviceID, name, servicePrice
             FROM servicelist
             WHERE name LIKE '$search%' ";
-                    
+    }
+    else{
+        $sql = "SELECT serviceID, name, servicePrice
+            FROM servicelist
+            WHERE name LIKE '$search%' AND type = $type ";
+    }
+                
     $query = $connect->query($sql);
     
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){

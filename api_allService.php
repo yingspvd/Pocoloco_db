@@ -5,7 +5,17 @@ $data = array();
 
 if($request_data->action == 'getAllService')
 {
-    $sql="SELECT * FROM service_view";
+    $role = $request_data-> role;
+    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+        $sql="SELECT * FROM service_view";
+    }
+    else if($role == "Manager Chef" || $role == "Chef"){
+        $sql="SELECT * FROM service_view WHERE type LIKE 'Food & Beverage'";
+    }
+    else if($role == "Manager Maid" || $role == "Maid"){
+        $sql="SELECT * FROM service_view WHERE type LIKE 'Room Facilities'";
+    }
+    
     $query = $connect->query($sql);
         
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -21,27 +31,59 @@ if($request_data->action == 'searchService')
     $filter = $request_data->filter;
     $sort = $request_data->sort;
     $direction = $request_data->direction;
+    $role = $request_data->role;
+    $type = $request_data->type;
 
-    if($direction == "up"){
-        $sql = "SELECT * 
-                FROM service_view 
-                WHERE   $filter LIKE '$search%'
-                ORDER BY $sort DESC
-                ";
-    }
-    else if($direction == "down"){
-        $sql = "SELECT * 
-                FROM service_view 
-                WHERE   $filter LIKE '$search%'
-                ORDER BY $sort
-                ";
+    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+        if($direction == "up"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '$search%'
+                    ORDER BY $sort DESC
+                    ";
+        }
+        else if($direction == "down"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '$search%'
+                    ORDER BY $sort
+                    ";
+        }
+        else{
+            $sql = "SELECT * 
+                    FROM service_view  
+                    ORDER BY name
+                    ";
+        }
+        
     }
     else{
-        $sql = "SELECT * 
-                FROM service_view  
-                ORDER BY name
-                ";
+        if($direction == "up"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '$search%' AND 
+                    type LIKE '$type%'
+                    ORDER BY $sort DESC
+                    ";
+        }
+        else if($direction == "down"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '$search%' AND
+                    type LIKE '$type%'
+                    ORDER BY $sort
+                    ";
+        }
+        else{
+            $sql = "SELECT * 
+                    FROM service_view  
+                    WHERE type LIKE '$type%'
+                    ORDER BY name
+                    ";
+        }
     }
+    
+    
     
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
