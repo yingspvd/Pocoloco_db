@@ -4,7 +4,9 @@ require_once 'connect.php';
 $request_data = json_decode(file_get_contents("php://input"));
 
 if($request_data->action == 'getAll') {
-    $sql = "SELECT * FROM account_view WHERE employeeID = 120001";
+    $employeeID = intval($request_data->employeeID) ;
+
+    $sql = "SELECT * FROM account_view WHERE employeeID = $employeeID";
     $query = $connect->prepare($sql);
     $query->execute();
     while($row = $query->fetch(PDO::FETCH_ASSOC)) {
@@ -41,5 +43,7 @@ if($request_data->action == 'updateData')
 
     echo json_encode($out); 
 }
+
+
 
 ?>
