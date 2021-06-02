@@ -60,9 +60,11 @@ if($request_data->action=="SearchData"){
 }
 
 if($request_data->action=="getBookingDetail"){
-    $query="SELECT bookingDetailID, roomID, status
-            FROM bookingDetail 
-            WHERE bookingID = $request_data->bookingID"
+    $bookingID = intval($request_data->bookingID);
+    
+    $query="SELECT *
+            FROM bookingdetail_view 
+            WHERE bookingID = $bookingID"
             ;
     $statement=$connect->prepare($query);
     $statement->execute(); 
@@ -106,6 +108,7 @@ if($request_data->action == "update"){
                 ":checkIn" => $request_data -> checkIn,
                 ":checkOut" => $request_data -> checkOut,
                 ":statusRoom" => $request_data -> statusRoom);
+
     $query = "UPDATE bookingdetail SET  guestFirstName = :guestFirstname, guestLastName = :guestLastname, 
                                         checkIn = :checkIn,  checkOut = :checkOut, status = :statusRoom
     WHERE bookingDetailID = :bookingDetailID";

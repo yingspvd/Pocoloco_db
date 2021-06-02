@@ -70,7 +70,7 @@ if($request_data->action == 'updateData')
     if($status == "Reserve") {
         $status = "R";
     }
-    elseif($status == "Check IN") {
+    elseif($status == "Check In") {
         $status = "I";
     }
     elseif($status == "Cancel") {
