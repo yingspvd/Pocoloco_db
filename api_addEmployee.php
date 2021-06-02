@@ -225,16 +225,17 @@ if($request_data->action == "addEmployee")
         $query = $connect->query($sql);
 
         if($query){
-          $out['message'] = "User Added Successfully";
+          $data['success'] = true;
+          $data['message'] = "User Added Successfully";
         }
         else{
-          $out['error'] = true;
-          $out['message'] = "Could not add User";
+          $data['false'] = true;
+          $data['message'] = "Could not add User";
         }
       }
 	}
 
-    echo json_encode($out);
+    echo json_encode($data);
 }
 
 ?>
