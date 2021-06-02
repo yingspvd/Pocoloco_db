@@ -15,8 +15,20 @@ if($request_data->action == "login")
 
     if($query->rowCount() == 1)
     {
-        //$row = $query->fetch(PDO::FETCH_BOTH);
-        $output = array("message" => "Login Complete","login" => 1,"employeeID" => $employeeID);
+        $sql = "SELECT r.roleName,d.departmentName,gender
+            FROM employee e,role r,department d
+            WHERE e.roleID = r.roleID AND
+                e.department = d.departmentID AND
+                e.employeeID = $employeeID";
+                
+        $query=$connect->query($sql);
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+            $roleName = $row["roleName"];
+            $departmentName = $row["departmentName"];
+            $gender = $row["gender"];
+        }
+        
+        $output = array("login" => 1,"employeeID" => $employeeID,"roleName" => $roleName,"departmentName" => $departmentName,"gender"=>$gender);
         echo json_encode($output);
     }
     else
