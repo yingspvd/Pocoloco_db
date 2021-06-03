@@ -6,7 +6,10 @@ $request_data = json_decode(file_get_contents("php://input"));
 if($request_data->action == 'getAll') {
     $type = intval($request_data -> type);
     
-    $sql = "SELECT * FROM servicelist_view WHERE TYPE = $type";
+    $sql = "SELECT * FROM servicelist_view 
+            WHERE TYPE = $type AND
+            STATUS = 1";
+            
     $query = $connect->prepare($sql);
     $query->execute();
     while($row = $query->fetch(PDO::FETCH_ASSOC)) {
