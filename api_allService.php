@@ -6,13 +6,15 @@ $data = array();
 if($request_data->action == 'getAllService')
 {
     $role = $request_data-> role;
-    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+    $department = $request_data-> department;
+    
+    if($role == "Owner" || $role == "Admin" || $department == "Receptionist" ){
         $sql="SELECT * FROM service_view";
     }
-    else if($role == "Manager Chef" || $role == "Chef"){
+    else if($department == "Kitchen"){
         $sql="SELECT * FROM service_view WHERE type LIKE 'Food & Beverage'";
     }
-    else if($role == "Manager Maid" || $role == "Maid"){
+    else if($department  == "Housekeeping"){
         $sql="SELECT * FROM service_view WHERE type LIKE 'Room Facilities'";
     }
     
@@ -33,8 +35,9 @@ if($request_data->action == 'searchService')
     $direction = $request_data->direction;
     $role = $request_data->role;
     $type = $request_data->type;
-
-    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+    $department = $request_data-> department;
+    
+    if($role == "Owner" || $role == "Admin" || $department == "Receptionist" ){
         if($direction == "up"){
             $sql = "SELECT * 
                     FROM service_view 

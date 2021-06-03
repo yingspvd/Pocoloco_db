@@ -4,16 +4,17 @@ $request_data=json_decode(file_get_contents("php://input"));
 
 if($request_data -> action == "getServiceActivity"){
     $role = $request_data-> role;
+    $department = $request_data-> department;
     
-    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+    if($role == "Owner" || $role == "Admin" || $department == "Receptionist" ){
         $sql = "SELECT *
         FROM serviceactivity_view
        ";
     }
-    else if($role == "Manager Chef" || $role == "Chef"){
+    else if($department == "Kitchen"){
         $sql="SELECT * FROM serviceact_chef_view";
     }
-    else if($role == "Manager Maid" || $role == "Maid"){
+    else if($department == "Housekeeping"){
         $sql="SELECT * FROM serviceact_maid_view";
     }
     
@@ -36,20 +37,21 @@ if($request_data -> action == "getServiceData"){
     $roomID = intval($request_data -> roomID);
     $date = $request_data -> date;
     $role = $request_data -> role;
+    $department = $request_data -> department;
 
-    if($role == "Owner" || $role == "Reception" || $role == "Manager Reception"){
+    if($role == "Owner" || $role == "Admin" || $department == "Receptionist"){
         $sql = "SELECT *
             FROM servicelist_view
             WHERE DATETIME LIKE '$date%' AND roomID = $roomID 
             ORDER BY DATETIME";
     }
-    else if($role == "Manager Chef" || $role == "Chef"){
+    else if($department == "Kitchen"){
         $sql = "SELECT *
             FROM servicelist_view
             WHERE DATETIME LIKE '$date%' AND TYPE = 2 AND roomID = $roomID 
             ORDER BY DATETIME";
     }
-    else if($role == "Manager Maid" || $role == "Maid"){
+    else if($department == "Housekeeping"){
         $sql = "SELECT *
             FROM servicelist_view
             WHERE DATETIME LIKE '$date%' AND TYPE = 1 AND roomID = $roomID 
@@ -79,8 +81,9 @@ if($request_data->action == 'searchActivity')
     $direction = $request_data->direction;
     $sort = $request_data->sort;
     $role = $request_data->role;
+    $department = $request_data->department;
     
-    if($role == "Manager Chef" || $role == "Chef"){
+    if($department == "Kitchen"){
         if($direction == "up"){
             $sql = "SELECT *
                 FROM serviceact_chef_view
@@ -99,7 +102,7 @@ if($request_data->action == 'searchActivity')
                 ORDER BY date DESC";
         }
     }
-    else if($role == "Manager Maid" || $role == "Maid"){
+    else if($department == "Housekeeping"){
         if($direction == "up"){
             $sql = "SELECT *
                 FROM serviceact_maid_view

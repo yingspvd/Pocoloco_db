@@ -6,13 +6,15 @@ $request_data = json_decode(file_get_contents("php://input"));
 if($request_data->action == 'getAllService')
 {
     $role = $request_data-> role;
-    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+    $department = $request_data-> department;
+
+    if($role == "Owner" || $role == "Admin" || $department == "Receptionist" ){
         $sql="SELECT * FROM service_view";
     }
-    else if($role == "Manager Chef" || $role == "Chef"){
+    else if($department == "Kitchen"){
         $sql="SELECT * FROM service_view WHERE type LIKE 'Food & Beverage'";
     }
-    else if($role == "Manager Maid" || $role == "Maid"){
+    else if($department == "Housekeeping"){
         $sql="SELECT * FROM service_view WHERE type LIKE 'Room Facilities'";
     }
 
@@ -29,9 +31,10 @@ if($request_data -> action == "searchService"){
 
     $search = $request_data -> search;
     $role = $request_data -> role;
+    $department = $request_data-> department;
     $type = $request_data -> type;
     
-    if($role == "Owner" || $role == "Manager Reception" || $role == "Reception" ){
+    if($role == "Owner" || $role == "Admin" || $role == "Receptionist" ){
         $sql = "SELECT serviceID, name, servicePrice
             FROM servicelist
             WHERE name LIKE '$search%' ";
@@ -71,8 +74,8 @@ if($request_data -> action == "confirmService"){
     $query = $connect->query($sql);
     
     if($query-> rowCount() == 1){
-        $sql = "INSERT INTO roomservice(roomID,serviceID,amount,total)
-            VALUES ('$roomID','$serviceID','$amount','$total')";
+        $sql = "INSERT INTO roomservice(roomID,serviceID,amount,total,status)
+            VALUES ('$roomID','$serviceID','$amount','$total',1)";
                     
         $query = $connect->query($sql);
 
