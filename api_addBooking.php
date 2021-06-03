@@ -29,9 +29,11 @@ if($request_data -> action == "getBookingDetail"){
   $bookingID = $request_data -> bookingID;
   
   // query
-  $sql = "SELECT b.bookingDetailID,b.roomID,d.roomType
-          FROM bookingdetail b,roomdescription d
-          WHERE b.bookingID = '$bookingID'
+  $sql = "SELECT b.bookingDetailID,b.roomID,r.roomType
+          FROM bookingdetail b,roomdescription r,hotelroom h
+          WHERE b.roomID = h.roomID AND
+              h.roomTypeID = r.roomTypeID AND
+          b.bookingID = $bookingID
           GROUP BY b.bookingDetailID";
           
   $query = $connect->query($sql);
