@@ -23,9 +23,12 @@ if($request_data-> action == "getRole")
 {
     // query
     $department = $request_data -> department;
-    $department = intval($department);
     
-    $sql = "SELECT roleName,roleID FROM role WHERE departmentID = $department";
+    $sql = "SELECT roleName,roleID 
+          FROM role r ,department d
+          WHERE r.departmentID = d.departmentID AND
+          d.departmentName = '$department'";
+
     $query = $connect->query($sql);
     
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -34,12 +37,6 @@ if($request_data-> action == "getRole")
 
     echo json_encode($data);
 
-}
-
-if($request_data -> action == "test")
-{
-  $out['message'] = true;
-  echo json_encode($out);
 }
 
 if($request_data->action == "addEmployee")
