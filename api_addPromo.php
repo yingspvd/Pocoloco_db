@@ -53,7 +53,8 @@ if($request_data-> action == "addPromotion")
     while($dataCheck <= $endDate){
         $sql = "SELECT *
                 FROM promotion_view
-                WHERE '$dataCheck' BETWEEN startDate AND endDate";
+                WHERE ('$dataCheck' BETWEEN startDate AND endDate) AND 
+                roomTypeID = $roomTypeID ";
                 
         $query = $connect->query($sql);
         while($row = $query -> fetch(PDO::FETCH_ASSOC)){
