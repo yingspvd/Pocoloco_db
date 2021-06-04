@@ -117,7 +117,7 @@ if($request_data -> action == "getCancel"){
 
     $year = $request_data -> year;
 
-    $sql = "SELECT count(bookingDetailID) AS numCancel, EXTRACT(MONTH FROM dateTime) AS month
+    $sql = "SELECT count(bookingDetailID) AS num, EXTRACT(MONTH FROM dateTime) AS month
             FROM bookingdetail
             WHERE dateTime LIKE '$year%' AND status = 'C'
             GROUP BY MONTH(dateTime)";
@@ -135,10 +135,27 @@ if($request_data -> action == "getGuest"){
 
     $year = $request_data -> year;
 
-    $sql = "SELECT COUNT(DISTINCT bookingID) AS numGuest, EXTRACT(MONTH FROM dateTime) AS month
+    $sql = "SELECT COUNT(DISTINCT bookingID) AS num, EXTRACT(MONTH FROM dateTime) AS month
             FROM bookingdetail
             WHERE checkIn LIKE '$year%'
             GROUP BY MONTH(dateTime)";
+
+   $query = $connect->query($sql);
+            
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    echo json_encode($data);
+
+}
+
+if($request_data -> action == "getRoomReservation"){
+    $year = $request_data -> year;
+
+    $sql = "SELECT roomType, COUNT(DISTINCT bookingDetailID) AS num
+            FROM bookingdetail_view
+            WHERE dateTime LIKE '$year%'
+            GROUP BY roomType";
 
    $query = $connect->query($sql);
             
@@ -172,23 +189,6 @@ if($request_data -> action == "getMontlyExpenses"){
 
 }
 
-if($request_data -> action == "getRoomReservation"){
-    $year = $request_data -> year;
-
-    $sql = "SELECT sum(amount) AS numService,serviceID
-            FROM roomservice
-            WHERE dateTime LIKE '$year%'
-            GROUP BY serviceID
-            ORDER BY numService DESC";
-
-   $query = $connect->query($sql);
-            
-    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-        $data[] = $row;
-    }
-    echo json_encode($data);
-
-}
 
 if($request_data -> action == "getRoomService"){
     $year = $request_data -> year;
