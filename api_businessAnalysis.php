@@ -162,6 +162,10 @@ if($request_data -> action == "getRoomReservation"){
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
     }
+    if($query->rowCount() == 0)
+    {
+        $data = null;
+    }
     echo json_encode($data);
 
 }
