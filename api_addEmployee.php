@@ -23,11 +23,23 @@ if($request_data-> action == "getRole")
 {
     // query
     $department = $request_data -> department;
-    
-    $sql = "SELECT roleName,roleID 
+    $role = $request_data -> role;
+
+    if($role == "Admin" || $role == "Owner"){
+      $out = 1;
+      $sql = "SELECT roleName,roleID 
           FROM role r ,department d
           WHERE r.departmentID = d.departmentID AND
           d.departmentName = '$department'";
+    }
+    else{ $out = 2;
+      $sql = "SELECT roleName,roleID 
+            FROM role r ,department d
+            WHERE r.departmentID = d.departmentID AND
+            r.roleName != 'Manager' AND
+            d.departmentName = '$department'
+            ";
+    }
 
     $query = $connect->query($sql);
     
@@ -106,13 +118,13 @@ if($request_data->action == "addEmployee")
 		$out['message'] = "LastName is required";
     }
 
-    // Check Identification  ** เช็คเลข 13 ตัว **
+    // Check Identification 
     else if($identification==''){
 		$out['lastName'] = true;
 		$out['message'] = "Identification is required";
     }
 
-    // Check identification ตัวเลข & 13 ตัว
+    // Check identification number
     else if ((is_numeric($identification) == false) || (strlen($identification) != 13))
     {
         $out['identification'] = true;
@@ -194,13 +206,20 @@ if($request_data->action == "addEmployee")
         // Add in DB
         else{
             //Set value
-            $department = intval($department);
             $roleID = intval($roleID);
             $shift = intval($shift);
             $password = md5($password);  
             $firstName = ucfirst($firstName);
             $lastName = ucfirst($lastName);
             
+            $sql = "SELECT departmentID
+                    FROM department 
+                    WHERE departmentName ='$department'";
+            $query = $connect->query($sql);
+            while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+              $departmentID = $row["departmentID"];
+            }
+
             //Query employeeID
             $sql_emID = "SELECT MAX(employeeID) AS employeeID FROM employee WHERE roleID = $roleID";
             $query = $connect->query($sql_emID);
@@ -218,7 +237,7 @@ if($request_data->action == "addEmployee")
 
         $sql = "INSERT INTO employee 
               (employeeID ,department,roleID, startDate,shift, em_firstname,em_lastname,identification,DOB,gender,phone,email,password,workStatus) 
-              VALUES ('$employeeID' ,'$department','$roleID', '$startDate','$shift', '$firstName','$lastName','$identification','$DOB','$gender','$phone','$email', '$password','E')";
+              VALUES ('$employeeID' ,'$departmentID','$roleID', '$startDate','$shift', '$firstName','$lastName','$identification','$DOB','$gender','$phone','$email', '$password','E')";
         $query = $connect->query($sql);
 
         if($query){
