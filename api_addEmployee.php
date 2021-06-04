@@ -81,177 +81,99 @@ if($request_data->action == "addEmployee")
     $password = check_input($request_data -> password);
     $cf_pass = check_input($request_data -> cf_pass);
     
+   
+    $sql="SELECT * FROM employee WHERE email='$email'";
+    $query=$connect->query($sql);
 
-    // Check Department
-    if($department==''){
-		$out['department'] = true;
-		$out['message'] = "Department is required";
-    }
-    
-    // Check roleID
-    else if($roleID==''){
-		$out['roleID'] = true;
-		$out['message'] = "roleID is required";
+    // Check mail in DB
+    if($query->rowCount() > 0){
+      $out['email'] = true;
+      $out['message'] = "Email already exist";
     }
 
-    // Check startDate
-    else if($startDate==''){
-		$out['startDate'] = true;
-		$out['message'] = "Start Date is required";
-    }
-
-    // Check Shift
-    else if($shift==''){
-		$out['shift'] = true;
-		$out['message'] = "Shift is required";
-    }
-
-    // Check FirstName
-    else if($startDate==''){
-		$out['firstName'] = true;
-		$out['message'] = "FirstName is required";
-    }
-
-    // Check LastName
-    else if($startDate==''){
-		$out['lastName'] = true;
-		$out['message'] = "LastName is required";
-    }
-
-    // Check Identification 
-    else if($identification==''){
-		$out['lastName'] = true;
-		$out['message'] = "Identification is required";
-    }
-
-    // Check identification number
-    else if ((is_numeric($identification) == false) || (strlen($identification) != 13))
-    {
-        $out['identification'] = true;
-        $out['message'] = "Identification is not correct";
-    }
-
-    // Check DOB
-    else if($DOB==''){
-		$out['DOB'] = true;
-		$out['message'] = "Birth Date is required";
-    }
-
-    // Check Gender
-    else if($gender==''){
-		$out['gender'] = true;
-		$out['message'] = "Gender is required";
-    }
-
-    // Check Phone 
-    else if($phone==''){
-		$out['phone'] = true;
-		$out['message'] = "Phone Number is required";
-    }
-
-  
-    // Check Phone ตัวเลข & 10 ตัว
-    else if ((is_numeric($phone) == false) || (strlen($phone) != 10))
-    {
-        $out['phone'] = true;
-        $out['message'] = "Phone Number is not correct";  
-    }
-
-    // Check Email
-    else if($email==''){
-		$out['email'] = true;
-		$out['message'] = "Email is required";
-    }
-
-    elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $out['email'] = true;
-        $out['message'] = "Invalid Email Format";
-    }
-
-    // Check Password 
-    elseif($password==''){
-        $out['password'] = true;
-        $out['message'] = "Password is required";
-    }
-
-    // Check Confirm Password
-    elseif($cf_pass==''){
-      $out['cf_pass'] = true;
-      $out['message'] = "Confirm Password is required";
-    }
-
-    // Check password match
-    else if($password != $cf_pass){
-      $out['password'] = true;
-      $out['cf_pass'] = true;
-		  $out['message'] = "Password does not match";
-    }
-
-    // Check Password at least 8 characters
-    else if(strlen($password) < 8){
-      $out['password'] = true;
-      $out['message'] = "Password must be at least 8 characters";
-    }
-    
+    // Add in DB
     else{
-        $sql="SELECT * FROM employee WHERE email='$email'";
-		    $query=$connect->query($sql);
-
-        // Check mail in DB
-        if($query->rowCount() > 0){
-          $out['email'] = true;
-          $out['message'] = "Email already exist";
-		    }
-
-        // Add in DB
-        else{
-            //Set value
-            $roleID = intval($roleID);
-            $shift = intval($shift);
-            $password = md5($password);  
-            $firstName = ucfirst($firstName);
-            $lastName = ucfirst($lastName);
-            
-            $sql = "SELECT departmentID
-                    FROM department 
-                    WHERE departmentName ='$department'";
-            $query = $connect->query($sql);
-            while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-              $departmentID = $row["departmentID"];
-            }
-
-            //Query employeeID
-            $sql_emID = "SELECT MAX(employeeID) AS employeeID FROM employee WHERE roleID = $roleID";
-            $query = $connect->query($sql_emID);
-            while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-              $data[] = $row;
-            }
-  
-            //Set EmployeeID
-            if($data[0]["employeeID"] == 0){
-              $employeeID = ($roleID * 10000) + 1;
-            }
-            else{
-              $employeeID = $data[0]["employeeID"] + 1;
-            }
-
-        $sql = "INSERT INTO employee 
-              (employeeID ,department,roleID, startDate,shift, em_firstname,em_lastname,identification,DOB,gender,phone,email,password,workStatus) 
-              VALUES ('$employeeID' ,'$departmentID','$roleID', '$startDate','$shift', '$firstName','$lastName','$identification','$DOB','$gender','$phone','$email', '$password','E')";
+        //Set value
+        $roleID = intval($roleID);
+        $shift = intval($shift);
+        $password = md5($password);  
+        $firstName = ucfirst($firstName);
+        $lastName = ucfirst($lastName);
+        
+        $sql = "SELECT departmentID
+                FROM department 
+                WHERE departmentName ='$department'";
         $query = $connect->query($sql);
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+          $departmentID = $row["departmentID"];
+        }
 
-        if($query){
-          $data['success'] = true;
-          $data['message'] = "User Added Successfully";
+        //Query employeeID
+        $sql_emID = "SELECT MAX(employeeID) AS employeeID FROM employee WHERE roleID = $roleID";
+        $query = $connect->query($sql_emID);
+        while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+          $data[] = $row;
+        }
+
+        //Set EmployeeID
+        if($data[0]["employeeID"] == 0){
+          $employeeID = ($roleID * 10000) + 1;
         }
         else{
-          $data['false'] = true;
-          $data['message'] = "Could not add User";
+          $employeeID = $data[0]["employeeID"] + 1;
         }
-      }
-	}
+
+    $sql = "INSERT INTO employee 
+          (employeeID ,department,roleID, startDate,shift, em_firstname,em_lastname,identification,DOB,gender,phone,email,password,workStatus) 
+          VALUES ('$employeeID' ,'$departmentID','$roleID', '$startDate','$shift', '$firstName','$lastName','$identification','$DOB','$gender','$phone','$email', '$password','E')";
+    $query = $connect->query($sql);
+
+    if($query){
+      $data['success'] = true;
+      $data['message'] = "User Added Successfully";
+    }
+    else{
+      $data['false'] = true;
+      $data['message'] = "Could not add User";
+    }
+  }
+	
 
     echo json_encode($data);
+}
+
+if($request_data -> action == "checkEmail"){
+  $email = $request_data -> email;
+  
+  if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+    $error = true;
+  }
+  else{
+    $error = false;
+    
+  }
+  echo json_encode($error);
+  
+}
+
+if($request_data -> action == "checkDOB"){
+  $DOB = $request_data -> DOB;
+  $year = intval($request_data -> year);
+  
+  $sql = "SELECT $year - EXTRACT(YEAR FROM '$DOB') AS diff";
+  $query = $connect->query($sql);
+  while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+    $diff = $row["diff"];
+  }
+
+  if($diff > 20){
+    $check = true;
+  }
+  else{
+    $check = false;
+  }
+  echo json_encode($check);
+  
 }
 
 ?>

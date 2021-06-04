@@ -4,7 +4,10 @@ require_once 'connect.php';
 $request_data = json_decode(file_get_contents("php://input"));
 
 if($request_data->action == 'getAll') {
-    $sql = "SELECT * FROM bookingdetail_view";
+    $year = $request_data -> year;
+    $sql = "SELECT * FROM bookingdetail_view 
+            WHERE dateTime LIKE '$year%'
+            ORDER BY bookingDetailID DESC";
     $query = $connect->prepare($sql);
     $query->execute();
     while($row = $query->fetch(PDO::FETCH_ASSOC)) {
@@ -24,24 +27,24 @@ if($request_data->action == 'searchBookingDetail')
     $filter = $request_data->filter;
     $sort = $request_data->sort;
     $direction = $request_data->direction;
+    $year = $request_data->year;
 
     if($direction == "up"){ 
-        $out=1;
         $sql = "SELECT *
                 FROM bookingdetail_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND dateTime LIKE '$year%'
                 ORDER BY $sort DESC";
     }
     else if($direction == "down"){
-        $out=2;
         $sql = "SELECT *
                 FROM bookingdetail_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND dateTime LIKE '$year%'
                 ORDER BY $sort";
     }
     else{
         $out=3;
         $sql = "SELECT * FROM bookingdetail_view 
+                WHERE dateTime LIKE '$year%'
                 ORDER BY bookingDetailID DESC
                 ";
     }
@@ -98,6 +101,8 @@ if($request_data->action == 'updateData')
 
     echo json_encode($out); 
 }
+
+
 
 
 ?>

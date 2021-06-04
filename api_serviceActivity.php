@@ -5,17 +5,24 @@ $request_data=json_decode(file_get_contents("php://input"));
 if($request_data -> action == "getServiceActivity"){
     $role = $request_data-> role;
     $department = $request_data-> department;
+    $year = $request_data-> year;
     
     if($role == "Owner" || $role == "Admin" || $department == "Receptionist" ){
         $sql = "SELECT *
         FROM serviceactivity_view
+        WHERE date LIKE '$year%'
+        ORDER BY date DESC
        ";
     }
     else if($department == "Kitchen"){
-        $sql="SELECT * FROM serviceact_chef_view";
+        $sql="SELECT * FROM serviceact_chef_view
+            WHERE date LIKE '$year%'
+            ORDER BY date DESC";
     }
     else if($department == "Housekeeping"){
-        $sql="SELECT * FROM serviceact_maid_view";
+        $sql="SELECT * FROM serviceact_maid_view
+            WHERE date LIKE '$year%'
+            ORDER BY date DESC";
     }
     
     $query = $connect->query($sql);
@@ -82,23 +89,25 @@ if($request_data->action == 'searchActivity')
     $sort = $request_data->sort;
     $role = $request_data->role;
     $department = $request_data->department;
+    $year = $request_data->year;
     
     if($department == "Kitchen"){
         if($direction == "up"){
             $sql = "SELECT *
                 FROM serviceact_chef_view
-                WHERE $filter LIKE '$search%'  
+                WHERE $filter LIKE '$search%' AND date LIKE '$year%'  
                 ORDER BY $sort DESC";
         }
         else if($direction == "down"){
             $sql = "SELECT *
                 FROM serviceact_chef_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND date LIKE '$year%'  
                 ORDER BY $sort";
         }
         else{
             $sql = "SELECT *
                 FROM serviceact_chef_view
+                WHERE date LIKE '$year%' 
                 ORDER BY date DESC";
         }
     }
@@ -106,18 +115,19 @@ if($request_data->action == 'searchActivity')
         if($direction == "up"){
             $sql = "SELECT *
                 FROM serviceact_maid_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND date LIKE '$year%'  
                 ORDER BY $sort DESC";
         }
         else if($direction == "down"){
             $sql = "SELECT *
                 FROM serviceact_maid_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND date LIKE '$year%'  
                 ORDER BY $sort";
         }
         else{
             $sql = "SELECT *
                 FROM serviceact_maid_view
+                WHERE date LIKE '$year%' 
                 ORDER BY date DESC";
         }
     }
@@ -125,18 +135,19 @@ if($request_data->action == 'searchActivity')
         if($direction == "up"){
             $sql = "SELECT *
                 FROM serviceactivity_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND date LIKE '$year%' 
                 ORDER BY $sort DESC";
         }
         else if($direction == "down"){
             $sql = "SELECT *
                 FROM serviceactivity_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND date LIKE '$year%' 
                 ORDER BY $sort";
         }
         else{
             $sql = "SELECT *
                 FROM serviceactivity_view
+                WHERE date LIKE '$year%' 
                 ORDER BY date DESC";
         }
     }

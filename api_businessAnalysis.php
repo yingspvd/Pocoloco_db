@@ -135,10 +135,10 @@ if($request_data -> action == "getGuest"){
 
     $year = $request_data -> year;
 
-    $sql = "SELECT COUNT(DISTINCT bookingID) AS num, EXTRACT(MONTH FROM dateTime) AS month
+    $sql = "SELECT COUNT(DISTINCT bookingID) AS num, EXTRACT(MONTH FROM checkIn) AS month
             FROM bookingdetail
             WHERE checkIn LIKE '$year%'
-            GROUP BY MONTH(dateTime)";
+            GROUP BY MONTH(checkIn)";
 
    $query = $connect->query($sql);
             
@@ -154,7 +154,7 @@ if($request_data -> action == "getRoomReservation"){
 
     $sql = "SELECT roomType, COUNT(DISTINCT bookingDetailID) AS num
             FROM bookingdetail_view
-            WHERE dateTime LIKE '$year%'
+            WHERE dateTime LIKE '$year%' AND (roomTypeID BETWEEN 10 AND 13)
             GROUP BY roomType";
 
    $query = $connect->query($sql);
@@ -164,7 +164,7 @@ if($request_data -> action == "getRoomReservation"){
     }
     if($query->rowCount() == 0)
     {
-        $data = null;
+        $data = "";
     }
     echo json_encode($data);
 
@@ -209,6 +209,10 @@ if($request_data -> action == "getRoomService"){
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
     }
+    if($query->rowCount() == 0)
+    {
+        $data = null;
+    }
     echo json_encode($data);
 }
 
@@ -216,7 +220,8 @@ if($request_data -> action == "getAbsence"){
     $year = $request_data -> year;
 
     $sql = "SELECT count(employeeID) AS numEmployee
-            FROM employee";
+            FROM employee
+            WHERE workStatus = 'E'";
 
     $query = $connect->query($sql);
        
@@ -242,7 +247,7 @@ if($request_data -> action == "getAbsence"){
     }
     if($query->rowCount() == 0)
     {
-        $data = "";
+        $data = null;
     }
     echo json_encode($data);
 }
@@ -252,7 +257,9 @@ if($request_data -> action == "getLateEmployee"){
 
     $sql = "SELECT * 
         FROM lateEmployee_view
-        WHERE EXTRACT(YEAR FROM stampDateTime) = $year";
+        WHERE EXTRACT(YEAR FROM stampDateTime) = $year 
+        ORDER BY percentLate DESC
+        LIMIT 10";
     $query = $connect->query($sql);
             
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -261,7 +268,7 @@ if($request_data -> action == "getLateEmployee"){
 
     if($query->rowCount() == 0)
     {
-        $data = "";
+        $data = null;
     }
     
     echo json_encode($data);
@@ -291,7 +298,7 @@ if($request_data -> action == "getBookingPro"){
 
     if($query->rowCount() == 0)
     {
-        $data = "";
+        $data = null;
     }
     
     echo json_encode($data);

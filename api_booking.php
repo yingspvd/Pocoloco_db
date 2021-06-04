@@ -4,9 +4,14 @@ $request_data=json_decode(file_get_contents("php://input"));
 $data = array();
 
 if($request_data->action=="getAll"){
+    $year = $request_data -> year;
+    
     $query="SELECT *
             FROM booking_view
+            WHERE date LIKE '$year%'
             ORDER BY bookingID DESC";
+    
+    
     $statement=$connect->prepare($query);
     $statement->execute();
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
@@ -26,22 +31,25 @@ if($request_data->action=="SearchData"){
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
     $direction = $request_data -> direction;
+    $year = $request_data -> year;
+
 
     if($direction == "up"){
         $sql = "SELECT *
         FROM booking_view
-        WHERE $filter LIKE '$search%'
+        WHERE $filter LIKE '$search%' AND date LIKE '$year%'
         ORDER BY $sort DESC";
     }
     else if($direction == "down"){
         $sql = "SELECT *
         FROM booking_view
-        WHERE $filter LIKE '$search%'
+        WHERE $filter LIKE '$search%' AND date LIKE '$year%'
         ORDER BY $sort";
     }
     else{
         $sql = "SELECT *
         FROM booking_view
+        WHERE date LIKE '$year%'
         ORDER BY bookingID DESC";
     }
    

@@ -9,7 +9,7 @@ if ($request_data->action == "saveData") {
     $detail = $request_data->detail;
     $expense = floatval($request_data->expense);
     $expenseDate = $request_data->expenseDate;
-    $type = intval($request_data -> type) ;
+    $type = intval($request_data -> type) ;    
     
     $sql = "INSERT INTO hotelexpense (employeeID,expenseDate,type,detail,expense) 
             VALUES ('$employeeID','$expenseDate','$type','$detail','$expense')"; 
@@ -28,7 +28,12 @@ if ($request_data->action == "saveData") {
 }
 
 if($request_data->action == "getAll"){
-    $query="SELECT * FROM expense_view";
+    $year = $request_data->year;
+    
+    $query="SELECT * 
+            FROM expense_view
+            WHERE expenseDate LIKE '$year%'
+            ORDER BY expenseDate DESC";
     $statement=$connect->prepare($query);
     $statement->execute();  
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
@@ -48,22 +53,24 @@ if($request_data -> action == "searchData"){
     $sort = $request_data -> sort;
     $filter = $request_data -> filter;
     $direction = $request_data->direction;
+    $year = $request_data->year;
 
    if($direction == "up"){
        $sql = "SELECT * FROM expense_view
-                WHERE $filter LIKE '$search%'
+                WHERE $filter LIKE '$search%' AND expenseDate LIKE '$year%'
                 ORDER BY $sort DESC
                ";
    }
    else if($direction == "down"){
     $sql = "SELECT * FROM expense_view
-             WHERE $filter LIKE '$search%'
+             WHERE $filter LIKE '$search%'AND expenseDate LIKE '$year%'
              ORDER BY $sort 
             ";
     }
     else{
         $sql = "SELECT * FROM expense_view
-                ORDER BY date DESC
+                WHERE expenseDate LIKE '$year%'
+                ORDER BY expenseDate DESC
                 ";
     }
 
