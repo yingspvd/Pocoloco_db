@@ -39,24 +39,6 @@ if($request_data->action == "login")
      
 }
 
-if($request_data -> action == "getInformation"){
-    $employeeID = intval($request_data -> employeeID);
 
-    $sql = "SELECT r.roleName,d.departmentName,e.gender
-            FROM employee e,role r , department d
-            WHERE e.roleID = r.roleID AND
-                e.department = d.departmentID AND
-                e.employeeID = $employeeID";
-        
-    $query=$connect->query($sql);
-    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
-        $roleName = $row["roleName"];
-        $departmentName = $row["departmentName"];
-        $gender = $row["gender"];
-    }
-
-    $output = array("employeeID" => $employeeID,"roleName" => $roleName,"departmentName" => $departmentName,"gender"=>$gender);
-    echo json_encode($output);
-}
 
 ?>
