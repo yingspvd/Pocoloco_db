@@ -15,7 +15,18 @@ $out = array('firstName' => false,
             'email'=> false, 
             'address' => false);
 
+if($request_data -> action == "getCustomerID"){
+    $sql = "SELECT MAX(customerID) + 1 AS customerID FROM customer";
+    $query = $connect->query($sql);
+  
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $customerID = $row["customerID"];
+    }
+    
+    echo json_encode($customerID);
+}
 
+        
 if ($request_data->action == "insert") {
     function check_input($data)
     {

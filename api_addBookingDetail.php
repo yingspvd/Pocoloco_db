@@ -20,9 +20,9 @@ if($request_data -> action == "getRoomNumber"){
   $roomType = $request_data -> roomType;
   $checkIn = $request_data -> checkIn;
   $checkOut = $request_data -> checkOut;
-
   $dataCheck = $checkIn;
   
+
   while($dataCheck <= $checkOut){
     // query
     $sql = "SELECT roomID 
@@ -70,6 +70,10 @@ if($request_data -> action == "getRoomNumber"){
       
       while($row = $query -> fetch(PDO::FETCH_ASSOC)){ 
           $data_room[] = $row;
+      }
+
+      if($query->rowCount() == 0){
+        $data_room = "";
       }
     
   }

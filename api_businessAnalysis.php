@@ -263,6 +263,36 @@ if($request_data -> action == "getLateEmployee"){
     echo json_encode($data);
 }
 
+if($request_data -> action == "getBookingPro"){
+    $year = intval($request_data -> year);
+    
+    $sql = "SELECT EXTRACT(DAY FROM p.startDate) AS startDate,
+                   EXTRACT(DAY FROM  p.endDate) AS endDate,
+                   EXTRACT(MONTH FROM p.startDate) AS startMonth, 
+                   EXTRACT(MONTH FROM p.endDate) AS endMonth,
+                   p.seasonName AS name,
+                   count(b.bookingDetailID) AS amount
+            FROM promotion_view p 
+            LEFT JOIN bookingdetail b ON (b.checkIn BETWEEN p.startDate AND p.endDate) 
+                                            OR (b.checkOut BETWEEN p.startDate AND p.endDate)
+            WHERE b.status != 'C' AND ((b.checkIn LIKE '$year%') OR (b.checkOut LIKE '$year%'))
+            GROUP BY p.seasonName
+            ORDER BY amount DESC";
+
+    $query = $connect->query($sql);
+            
+    while($row = $query -> fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+
+    if($query->rowCount() == 0)
+    {
+        $data = "";
+    }
+    
+    echo json_encode($data);
+}
+
     
 
 ?>

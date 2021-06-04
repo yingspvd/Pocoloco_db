@@ -72,12 +72,14 @@ if ($request_data -> action == "searchData") {
     $sortFilter = $request_data->sortFilter;
     $direction = $request_data->direction;
 
-    if($direction == "up"){    
+    if($direction == "up"){  
+         
         $sql="SELECT *
                 FROM allTimestamp_view
                 WHERE $searchFilter LIKE '$keyword%' 
                 ORDER BY $sortFilter DESC";
     } else { 
+        
         $sql="SELECT *
                 FROM allTimestamp_view
                 WHERE $searchFilter LIKE '$keyword%' 
