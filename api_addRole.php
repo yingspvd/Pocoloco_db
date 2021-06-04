@@ -22,7 +22,7 @@ if($request_data-> action == "addRole")
     $departmentID = intval($departmentID);
     $roleName = ucfirst($roleName);
     $salary = intval($salary);
-    $bonusRate = floatval($bonusRate);  
+    $bonusRate = intval($bonusRate);  
           
       //Query RoleID
       $sql_roleID = "SELECT MAX(roleID) AS roleID FROM role WHERE departmentID = $departmentID";
