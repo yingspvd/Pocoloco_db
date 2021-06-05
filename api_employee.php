@@ -6,7 +6,7 @@ if($request_data -> action == "getEmployee"){
     
     $sql = "SELECT *
             FROM employee_view
-            ORDER BY employeeID DESC";
+            ORDER BY employeeID";
                     
     $query = $connect->query($sql);
     

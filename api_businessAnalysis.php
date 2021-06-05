@@ -230,12 +230,12 @@ if($request_data -> action == "getAbsence"){
     }
     $numEmployee = intval($numEmployee);
 
-    $sql = "SELECT ($numEmployee - count(employeeID)) AS numEmployee, 
+    $sql = "SELECT ($numEmployee - count(employeeID)) AS numEmployee, count(employeeID) AS employee,
                 EXTRACT(DAY FROM StampDateTime) AS day,
                 EXTRACT(MONTH FROM StampDateTime) AS month,
                 EXTRACT(YEAR FROM StampDateTime) AS year
             FROM timestamp 
-            WHERE StampDateTime LIKE '$year%'
+            WHERE StampDateTime LIKE '$year%' AND StampDateTime < CAST( CURDATE() AS Date ) AND type = 'I'
             GROUP BY CAST(StampDateTime AS DATE)
             ORDER BY numEmployee DESC
             LIMIT 6";
@@ -277,15 +277,16 @@ if($request_data -> action == "getLateEmployee"){
 if($request_data -> action == "getBookingPro"){
     $year = intval($request_data -> year);
     
-    $sql = "SELECT EXTRACT(DAY FROM p.startDate) AS startDate,
-                   EXTRACT(DAY FROM  p.endDate) AS endDate,
-                   EXTRACT(MONTH FROM p.startDate) AS startMonth, 
-                   EXTRACT(MONTH FROM p.endDate) AS endMonth,
-                   p.seasonName AS name,
-                   count(b.bookingDetailID) AS amount
+    $sql = "SELECT 	EXTRACT(DAY FROM p.startDate) AS startDate,
+            EXTRACT(DAY FROM  p.endDate) AS endDate,
+            EXTRACT(MONTH FROM p.startDate) AS startMonth, 
+            EXTRACT(MONTH FROM p.endDate) AS endMonth,
+            p.seasonName AS name,
+            COUNT( DISTINCT b.bookingDetailID ) AS amount
+        
             FROM promotion_view p 
             LEFT JOIN bookingdetail b ON (b.checkIn BETWEEN p.startDate AND p.endDate) 
-                                            OR (b.checkOut BETWEEN p.startDate AND p.endDate)
+                                        OR (b.checkOut BETWEEN p.startDate AND p.endDate)
             WHERE b.status != 'C' AND ((b.checkIn LIKE '$year%') OR (b.checkOut LIKE '$year%'))
             GROUP BY p.seasonName
             ORDER BY amount DESC";

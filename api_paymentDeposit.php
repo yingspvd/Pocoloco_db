@@ -54,7 +54,7 @@ if($request_data->action=="getPayment"){
             FROM bookingdetail b, hotelroom h, roomdescription r
             WHERE b.roomID = h.roomID AND
                 h.roomTypeID = r.roomTypeID AND
-                b.bookingID = $bookingID";
+                b.bookingID = $bookingID AND b.status = 'R'";
 
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){

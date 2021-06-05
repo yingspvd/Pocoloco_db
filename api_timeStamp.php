@@ -92,12 +92,10 @@ if($request_data -> action == 'stampCheckOut'){
 
 if ($request_data -> action == "getTodayTimeStamp") {
     $today = $request_data -> today;
-    $year = $request_data -> year;
     
     $sql = "SELECT *
-    FROM allTimestamp_view
-    WHERE stampDateTime BETWEEN '$today 00:00:00' AND '$today 23:59:59'
-            AND stampDateTime LIKE '$year%'";
+        FROM allTimestamp_view
+        WHERE stampDateTime BETWEEN '$today 00:00:00' AND '$today 23:59:59'";
 
     $query = $connect -> query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -117,7 +115,7 @@ if ($request_data -> action == "searchData") {
     $searchFilter = $request_data->searchFilter;
     $sortFilter = $request_data->sortFilter;
     $direction = $request_data->direction;
-    $year = $request_data->year;
+
 
     if($direction == "up"){  
          
@@ -125,7 +123,6 @@ if ($request_data -> action == "searchData") {
                 FROM allTimestamp_view
                 WHERE $searchFilter LIKE '$keyword%' AND 
                 (stampDateTime > (now() - interval 1 month) AND stampDateTime < now()) 
-                AND stampDateTime LIKE '$year%'
                 ORDER BY $sortFilter DESC";
     } else { 
         
@@ -133,7 +130,6 @@ if ($request_data -> action == "searchData") {
                 FROM allTimestamp_view
                 WHERE $searchFilter LIKE '$keyword%' AND 
                 (stampDateTime > (now() - interval 1 month) AND stampDateTime < now())
-                AND stampDateTime LIKE '$year%'
                 ORDER BY $sortFilter";
     }
     

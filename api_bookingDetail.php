@@ -7,7 +7,7 @@ if($request_data->action == 'getAll') {
     $year = $request_data -> year;
     $sql = "SELECT * FROM bookingdetail_view 
             WHERE dateTime LIKE '$year%'
-            ORDER BY bookingDetailID DESC";
+            ORDER BY dateTime DESC";
     $query = $connect->prepare($sql);
     $query->execute();
     while($row = $query->fetch(PDO::FETCH_ASSOC)) {
@@ -45,7 +45,7 @@ if($request_data->action == 'searchBookingDetail')
         $out=3;
         $sql = "SELECT * FROM bookingdetail_view 
                 WHERE dateTime LIKE '$year%'
-                ORDER BY bookingDetailID DESC
+                ORDER BY dateTime DESC
                 ";
     }
     
@@ -66,8 +66,6 @@ if($request_data->action == 'updateData')
     $bookingDetailID = $request_data->bookingDetailID;
     $guestFirstName = $request_data->guestFirstName;
     $guestLastName = $request_data->guestLastName;
-    $checkIn = $request_data->checkIn;
-    $checkOut = $request_data->checkOut;
     $status = $request_data->status;
 
     if($status == "Reserve") {
@@ -79,12 +77,11 @@ if($request_data->action == 'updateData')
     elseif($status == "Cancel") {
         $status = "C";
     }
+
     
     $sql = "UPDATE bookingDetail 
                 SET guestFirstName = '$guestFirstName', 
                 guestLastName = '$guestLastName', 
-                checkIn = '$checkIn' ,
-                checkOut = '$checkOut',
                 status = '$status'
                 WHERE bookingDetailID = '$bookingDetailID'
                 ";
