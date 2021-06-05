@@ -30,7 +30,19 @@ if($request_data->action=="searchData"){
     $filter = $request_data -> filter;
     $direction = $request_data -> direction;
     
-    if($direction == "up"){
+    if($filter == "name" && $direction == "up"){
+        $sql = "SELECT * 
+                FROM customer_view
+                WHERE (firstName LIKE '$search%' OR lastName LIKE '$search%')
+                ORDER BY $sort DESC";
+    }
+    else if($filter == "name" && $direction == "down"){
+        $sql = "SELECT * 
+                FROM customer_view
+                WHERE (firstName LIKE '$search%' OR lastName LIKE '$search%')
+                ORDER BY $sort";
+    }
+    else if($direction == "up"){
         $sql = "SELECT * 
                 FROM customer_view
                 WHERE $filter LIKE '$search%'

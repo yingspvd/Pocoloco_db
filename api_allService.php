@@ -38,7 +38,21 @@ if($request_data->action == 'searchService')
     $department = $request_data-> department;
     
     if($role == "Owner" || $role == "Admin" || $department == "Receptionist" ){
-        if($direction == "up"){
+        if($filter == "name" && $direction == "up"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '%$search%'
+                    ORDER BY $sort DESC
+                    ";
+        }
+        else if($filter == "name" && $direction == "down"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '%$search%'
+                    ORDER BY $sort
+                    ";
+        }
+        else if($direction == "up"){
             $sql = "SELECT * 
                     FROM service_view 
                     WHERE   $filter LIKE '$search%'
@@ -61,7 +75,23 @@ if($request_data->action == 'searchService')
         
     }
     else{
-        if($direction == "up"){
+        if($filter == "name" && $direction == "up"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '%$search%' AND 
+                    type LIKE '$type%'
+                    ORDER BY $sort DESC
+                    ";
+        }
+        else if($filter == "name" && $direction == "down"){
+            $sql = "SELECT * 
+                    FROM service_view 
+                    WHERE   $filter LIKE '%$search%' AND
+                    type LIKE '$type%'
+                    ORDER BY $sort
+                    ";
+        }
+        else if($direction == "up"){
             $sql = "SELECT * 
                     FROM service_view 
                     WHERE   $filter LIKE '$search%' AND 

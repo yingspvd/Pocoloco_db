@@ -158,7 +158,19 @@ if($request_data -> action == "searchData"){
     $sort = $request_data -> sort;
     $direction = $request_data -> direction;
 
-    if($direction == "up"){
+    if($filter == "em_name" && $direction == "up"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE (firstName LIKE '$search%' OR lastName LIKE '$search%')
+                ORDER BY $sort DESC";
+    }
+    else if($filter == "em_name" && $direction == "down"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE $filter LIKE '%$search%'
+                ORDER BY $sort";
+    }
+    else if($direction == "up"){
         $sql = "SELECT *
                 FROM employee_view
                 WHERE $filter LIKE '$search%'
@@ -197,7 +209,19 @@ if($request_data -> action == "searchDataManager"){
     $direction = $request_data -> direction;
     $department = $request_data -> department;
 
-    if($direction == "up"){
+    if($filter == "em_name" && $direction == "up"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE (firstName LIKE '$search%' OR lastName LIKE '$search%') AND departmentName = '$department'
+                ORDER BY $sort DESC";
+    }
+    else if( $filter == "em_name" && $direction == "down"){
+        $sql = "SELECT *
+                FROM employee_view
+                WHERE (firstName LIKE '$search%' OR lastName LIKE '$search%') AND departmentName = '$department'
+                ORDER BY $sort";
+    }
+    else if($direction == "up"){
         $sql = "SELECT *
                 FROM employee_view
                 WHERE $filter LIKE '$search%' AND departmentName = '$department'

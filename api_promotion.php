@@ -5,7 +5,7 @@ $request_data=json_decode(file_get_contents("php://input"));
 if($request_data -> action == "getPromotion"){
     $sql = "SELECT *
             FROM promotion_view
-            ORDER BY promotionID DESC";
+            ORDER BY startDate DESC";
                     
     $query = $connect->query($sql);
     
@@ -25,7 +25,20 @@ if($request_data->action=="searchData"){
     $sort = $request_data->sort;
     $direction = $request_data->direction;
     
-    if($direction == "up"){
+    if( ($filter == "promotionName" || $filter == "seasonName") && $direction == "up"){
+        $sql = "SELECT *
+                FROM promotion_view
+                WHERE $filter LIKE '%$search%'
+                ORDER BY $sort DESC";
+    }
+    else if(($filter == "promotionName" || $filter == "seasonName") && $direction == "down"){
+        $sql = "SELECT *
+                FROM promotion_view
+                WHERE $filter LIKE '%$search%'
+                ORDER BY $sort";
+    }
+    
+    else if($direction == "up"){
         $sql = "SELECT *
                 FROM promotion_view
                 WHERE $filter LIKE '$search%'
@@ -40,7 +53,7 @@ if($request_data->action=="searchData"){
     else{
         $sql = "SELECT *
         FROM promotion_view
-        ORDER BY promotionID DESC";
+        ORDER BY startDate DESC";
     }
   
  

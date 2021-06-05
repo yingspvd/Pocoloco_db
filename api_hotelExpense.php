@@ -55,14 +55,26 @@ if($request_data -> action == "searchData"){
     $direction = $request_data->direction;
     $year = $request_data->year;
 
-   if($direction == "up"){
-       $sql = "SELECT * FROM expense_view
-                WHERE $filter LIKE '$search%' AND expenseDate LIKE '$year%'
-                ORDER BY $sort DESC
-               ";
-   }
+    if($filter == "em_firstname" && $direction == "up"){
+        $sql = "SELECT * FROM expense_view
+                 WHERE (em_firstname LIKE '$search%' OR em_lastname LIKE '$search%') AND expenseDate LIKE '$year%'
+                 ORDER BY $sort DESC
+                ";
+    }
+    else if($filter == "em_firstname" && $direction == "down"){
+     $sql = "SELECT * FROM expense_view
+              WHERE (em_firstname LIKE '$search%' OR em_lastname LIKE '$search%')AND expenseDate LIKE '$year%'
+              ORDER BY $sort 
+             ";
+     }
+    else if($direction == "up"){
+        $sql = "SELECT * FROM expense_view
+                    WHERE $filter LIKE '$search%' AND expenseDate LIKE '$year%'
+                    ORDER BY $sort DESC
+                ";
+    }
    else if($direction == "down"){
-    $sql = "SELECT * FROM expense_view
+        $sql = "SELECT * FROM expense_view
              WHERE $filter LIKE '$search%'AND expenseDate LIKE '$year%'
              ORDER BY $sort 
             ";

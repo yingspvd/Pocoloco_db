@@ -84,9 +84,6 @@ if($request_data-> action == "addPromotion")
       $out['message'] = "Already have this promotion during this date";
     }
 
-      
-    
-  
   echo json_encode($out);
      
 }

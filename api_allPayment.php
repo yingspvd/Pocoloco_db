@@ -26,7 +26,20 @@ if($request_data->action == 'searchPayment')
     $direction = $request_data->direction;
     $year = $request_data->year;
 
-    if($direction == "up"){
+
+    if($filter == "name" && $direction == "up"){
+        $sql = "SELECT *
+        From payment_view
+        WHERE (guestFirstName LIKE '$search%' OR guestLastName LIKE '$search%') AND datePaid LIKE '$year%'
+        ORDER BY $sort DESC";
+    }
+    else if($filter == "name" && $direction == "down"){
+        $sql = "SELECT *
+        From payment_view
+        WHERE (guestFirstName LIKE '$search%' OR guestLastName LIKE '$search%') AND datePaid LIKE '$year%'
+        ORDER BY $sort";
+    }
+    else if($direction == "up"){
         $sql = "SELECT *
         From payment_view
         WHERE $filter LIKE '$search%' AND datePaid LIKE '$year%'

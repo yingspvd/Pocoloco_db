@@ -33,8 +33,19 @@ if($request_data->action=="SearchData"){
     $direction = $request_data -> direction;
     $year = $request_data -> year;
 
-
-    if($direction == "up"){
+    if($filter == "customerName" && $direction == "up"){
+        $sql = "SELECT *
+        FROM booking_view
+        WHERE (firstName LIKE '$search%' OR lastName LIKE '$search%')  AND date LIKE '$year%'
+        ORDER BY $sort DESC";
+    }
+    else if($filter == "customerName" && $direction == "down"){
+        $sql = "SELECT *
+        FROM booking_view
+        WHERE (firstName LIKE '$search%' OR lastName LIKE '$search%') AND date LIKE '$year%'
+        ORDER BY $sort";
+    }
+    else if($direction == "up"){
         $sql = "SELECT *
         FROM booking_view
         WHERE $filter LIKE '$search%' AND date LIKE '$year%'
