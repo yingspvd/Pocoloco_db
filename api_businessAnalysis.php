@@ -154,7 +154,7 @@ if($request_data -> action == "getRoomReservation"){
 
     $sql = "SELECT roomType, COUNT(DISTINCT bookingDetailID) AS num
             FROM bookingdetail_view
-            WHERE dateTime LIKE '$year%' AND (roomTypeID BETWEEN 10 AND 13)
+            WHERE checkIn LIKE '$year%' AND (roomTypeID BETWEEN 10 AND 13)
             GROUP BY roomType";
 
    $query = $connect->query($sql);

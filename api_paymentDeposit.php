@@ -61,6 +61,9 @@ if($request_data->action=="getPayment"){
         $data[] = $row;
     }
 
+    if($query->rowCount() == 0){
+        $data = "" ;
+    }
     echo json_encode($data);  
 
 }
