@@ -71,7 +71,8 @@ if($request_data -> action == "getInformation"){
                     WHERE r.serviceID = s.serviceID AND
                         b.roomID = r.roomID AND
                         r.dateTime LIKE '$dataCheck%' AND
-                        r.roomID = $roomID";
+                        r.roomID = $roomID AND
+                        b.status = 'I'";
                     
             $query = $connect->query($sql);
             while($row = $query -> fetch(PDO::FETCH_ASSOC)){

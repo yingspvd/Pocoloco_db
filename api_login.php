@@ -18,7 +18,8 @@ if($request_data->action == "login")
         $sql = "SELECT r.roleName,d.departmentName,gender
             FROM employee e,role r,department d
             WHERE e.roleID = r.roleID AND
-                e.department = d.departmentID AND
+                e.department = d.departmentID AND 
+                e.workStatus = 'E' AND
                 e.employeeID = $employeeID";
                 
         $query=$connect->query($sql);

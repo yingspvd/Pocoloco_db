@@ -7,7 +7,7 @@ if($request_data->action == 'getAll') {
     $year = $request_data -> year;
     $sql = "SELECT * FROM bookingdetail_view 
             WHERE dateTime LIKE '$year%'
-            ORDER BY dateTime DESC";
+            ORDER BY bookingDetailID DESC";
     $query = $connect->prepare($sql);
     $query->execute();
     while($row = $query->fetch(PDO::FETCH_ASSOC)) {

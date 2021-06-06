@@ -16,13 +16,14 @@ if($request_data -> action == "getEmployee"){
     
     echo json_encode($data);   
 } 
+
 if($request_data -> action == "getEmployeeManager"){
     $department = $request_data -> department;
 
     $sql = "SELECT *
             FROM employee_view
             WHERE departmentName = '$department'
-            ORDER BY roleName, employeeID DESC";
+            ORDER BY employeeID";
                     
     $query = $connect->query($sql);
     

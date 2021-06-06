@@ -34,7 +34,7 @@ if($request_data -> action == "searchService"){
     $department = $request_data-> department;
     $type = $request_data -> type;
     
-    if($role == "Owner" || $role == "Admin" || $role == "Receptionist" ){
+    if($role == "Owner" || $role == "Admin" || $department == "Receptionist" ){
         $sql = "SELECT serviceID, name, servicePrice
             FROM servicelist
             WHERE name LIKE '$search%' ";
