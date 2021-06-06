@@ -1,7 +1,6 @@
 <?php 
 require_once 'connect.php';
 
-
 $request_data=json_decode(file_get_contents("php://input"));
 $data = array();
 $out = array('error' => false, 'email'=> false, 'password' => false);
@@ -58,14 +57,6 @@ if($request_data->action == "register")
 			}
 		}
 	}
-    // $password = $request_data -> password;
-    // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    // $data = array(":email" => $request_data-> email,
-    //             ":password" => $hashed_password);
-    // $query = "INSERT INTO newuser (email,password) VALUES(:email,:password)";
-    // $statement = $connect -> prepare($query);
-    // $statement -> execute($data);
-    // $output = array("message" => "Insert Complete");
      echo json_encode($out);
 
 }

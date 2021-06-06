@@ -55,8 +55,6 @@ if($request_data -> action == "searchService"){
     {
         $data = "";
     }
-    
-    
     echo json_encode($data);  
 }
 
@@ -91,7 +89,6 @@ if($request_data -> action == "confirmService"){
         $out['success'] = false;
         $out['message'] = "Don't have room ID $roomID" ;
     }
-
      echo json_encode($out);  
 }
 ?>

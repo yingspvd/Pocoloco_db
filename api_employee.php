@@ -13,7 +13,6 @@ if($request_data -> action == "getEmployee"){
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
     }
-    
     echo json_encode($data);   
 } 
 
@@ -30,7 +29,6 @@ if($request_data -> action == "getEmployeeManager"){
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
     }
-    
     echo json_encode($data);   
 } 
 

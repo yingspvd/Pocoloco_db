@@ -116,20 +116,15 @@ if($request_data->action == 'searchService')
         }
     }
     
-    
-    
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
     }
-  
     if($query->rowCount() == 0)
     {
         $data = "";
-    }
-    
+    } 
     echo json_encode($data);
-
 }
     
 if($request_data->action == 'updateData')

@@ -3,7 +3,6 @@ require_once 'connect.php';
 $request_data=json_decode(file_get_contents("php://input"));
 $data = array();
 
-
 if($request_data -> action == "getRoomType"){
 
     // query
@@ -90,7 +89,6 @@ if($request_data->action == "updateData"){
         $out['message'] = "Could not update ";
     }
     
-
     echo json_encode($out);   
                 
 }

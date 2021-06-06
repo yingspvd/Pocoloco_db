@@ -40,9 +40,6 @@ if($request_data -> action == "getInformation"){
     else{
         $data = "2";
     }
-
-    
-    
     echo json_encode($data);  
     
 }
@@ -107,7 +104,6 @@ if($request_data->action=="confirmInf"){
         }
         
     }
-
      echo json_encode($out);  
 }
 

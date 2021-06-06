@@ -11,7 +11,6 @@ if($request_data->action=="getAll"){
             WHERE date LIKE '$year%'
             ORDER BY bookingID DESC";
     
-    
     $statement=$connect->prepare($query);
     $statement->execute();
     while($row = $statement->fetch(PDO::FETCH_ASSOC)){
@@ -19,8 +18,7 @@ if($request_data->action=="getAll"){
     }
 
     if($statement->rowCount() == 0){
-        $data = "";
-        
+        $data = "";  
     }
    
     echo json_encode($data);   
@@ -73,8 +71,6 @@ if($request_data->action=="SearchData"){
         $data = "";
         
     }
-  
-
     echo json_encode($data);   
 }
 
@@ -134,9 +130,6 @@ if($request_data->action == "update"){
     $statement = $connect -> prepare($query);
     $statement -> execute($data);
     $output = array("message" => "Update Complete");
-    echo json_encode($output);
-                
+    echo json_encode($output);             
 }
-
-
 ?>

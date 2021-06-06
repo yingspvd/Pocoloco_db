@@ -1,11 +1,8 @@
 <?php
 require_once 'connect.php';
 
-#เปลี่ยนช้อมูลจาก client(string) ที่เป็น js เป็น php
 $request_data = json_decode(file_get_contents("php://input"));
 $data = array();
-
-// var_dump($request_data);
 
 $out = array('firstName' => false,
             'lastName' => false,

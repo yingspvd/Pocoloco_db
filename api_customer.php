@@ -19,7 +19,6 @@ if($request_data -> action == "getAllCustomer"){
     {
         $data = "";
     }
-    
     echo json_encode($data);   
 } 
 
@@ -70,7 +69,6 @@ if($request_data->action=="searchData"){
     {
         $data = "";
     }
-    
     echo json_encode($data);  
 }
 
@@ -87,7 +85,6 @@ if($request_data -> action == "editData"){
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
     }
-    
     echo json_encode($data);  
 }
 

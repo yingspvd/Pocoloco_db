@@ -176,7 +176,7 @@ if($request_data -> action == "getMontlyExpenses"){
 
     $sql = "SELECT e.type, sum(v.expense) AS expense
             FROM expense_view v, hotelexpense e
-            WHERE e.dateTime LIKE '$date%' AND e.expenseID = v.expenseID
+            WHERE e.dateTime LIKE '$date%' AND e.expenseID = v.expenseID AND e.type != 0
             GROUP BY e.type
             ORDER BY e.type";
 
@@ -304,7 +304,4 @@ if($request_data -> action == "getBookingPro"){
     
     echo json_encode($data);
 }
-
-    
-
 ?>

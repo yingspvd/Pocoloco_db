@@ -39,7 +39,4 @@ if($request_data->action == "login")
     }
      
 }
-
-
-
 ?>

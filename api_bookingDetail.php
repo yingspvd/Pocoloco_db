@@ -78,14 +78,12 @@ if($request_data->action == 'updateData')
         $status = "C";
     }
 
-    
     $sql = "UPDATE bookingDetail 
                 SET guestFirstName = '$guestFirstName', 
                 guestLastName = '$guestLastName', 
                 status = '$status'
                 WHERE bookingDetailID = '$bookingDetailID'
                 ";
-
     $query = $connect->query($sql);
 
     if($query){
@@ -95,11 +93,6 @@ if($request_data->action == 'updateData')
         else{
         $out['message'] = "Could not update ";
         }
-
     echo json_encode($out); 
 }
-
-
-
-
 ?>

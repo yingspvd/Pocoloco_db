@@ -116,7 +116,6 @@ if ($request_data -> action == "searchData") {
     $sortFilter = $request_data->sortFilter;
     $direction = $request_data->direction;
 
-
     if($direction == "up"){  
          
         $sql="SELECT *
@@ -145,6 +144,5 @@ if ($request_data -> action == "searchData") {
     
     echo json_encode($data);
 }
-
 
 ?>

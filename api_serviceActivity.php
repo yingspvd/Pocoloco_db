@@ -64,9 +64,7 @@ if($request_data -> action == "getServiceData"){
             WHERE DATETIME LIKE '$date%' AND TYPE = 1 AND roomID = $roomID 
             ORDER BY DATETIME";
     }
-    
-            
-                    
+                 
     $query = $connect->query($sql);
     
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
@@ -151,11 +149,6 @@ if($request_data->action == 'searchActivity')
                 ORDER BY date DESC";
         }
     }
-    
-   
-    
-    
-    
     
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){

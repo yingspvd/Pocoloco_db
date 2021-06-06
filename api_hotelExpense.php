@@ -117,8 +117,7 @@ if($request_data->action=="getEditData"){
         $data['expense']=$row['expense'];
         $data['expenseDate']=$row['expenseDate'];
     }
-    
-    echo json_encode($data);   //table
+    echo json_encode($data);  
 }
 
 if($request_data->action == "update"){
@@ -146,9 +145,7 @@ if($request_data->action == "update"){
         }
     else{
         $out['message'] = "Could not delete ";
-    }
-        
-    
+    } 
    echo json_encode($out);           
 }
 

@@ -62,7 +62,6 @@ if($request_data -> action == "getInformation"){
             $checkOut = $row["checkOut"];
         }
         
-
         // Get Service Price
         $dataCheck = $checkIn;
         while($dataCheck <= $checkOut){
@@ -81,7 +80,6 @@ if($request_data -> action == "getInformation"){
             
             $dataCheck = date('Y-m-d',strtotime($dataCheck. '1 days'));
           }
-
 
         $deposit = array("bookingID"=>$bookingID,"roomID"=> "$roomID", "name" => "Deposit","amount" => "1" ,"total" => "-$total");
         $data[] = $deposit;
@@ -114,7 +112,6 @@ if($request_data -> action == "getInformation"){
                 $bookingDetailID = intval($row["bookingdetailID"]) ;
             }
             
-
             // Insert 
             $sql = "INSERT INTO payment (bookingDetailID,methodID,amountPaid,type,datePaid)
                     VALUES($bookingDetailID,$methodID,$amount,$type, CURDATE())
@@ -122,11 +119,11 @@ if($request_data -> action == "getInformation"){
 
             $query = $connect->query($sql);
                     
-            
             // Update Status Check Out
             $sql = "UPDATE bookingdetail
                     SET status = 'O'
                     WHERE roomID = $roomID AND
+                        bookingDetailID = $bookingDetailID AND
                         status = 'I'";
             $query = $connect->query($sql);
             

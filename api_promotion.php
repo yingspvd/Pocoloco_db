@@ -56,7 +56,6 @@ if($request_data->action=="searchData"){
         ORDER BY startDate DESC";
     }
   
- 
     $query = $connect->query($sql);
     while($row = $query -> fetch(PDO::FETCH_ASSOC)){
         $data[] = $row;
@@ -66,7 +65,6 @@ if($request_data->action=="searchData"){
     {
         $data = "";
     } 
-    
     echo json_encode($data);  
 }
 
@@ -96,7 +94,6 @@ if($request_data -> action == "getRoomType"){
     echo json_encode($data);
   }
   
-
   if($request_data -> action == "editData"){
     
     $promotionID = $request_data -> promotionID;
@@ -151,7 +148,6 @@ if($request_data -> action == "updateData"){
 
     echo json_encode($out); 
 }
-
 
 if($request_data->action == "deleteData"){
   

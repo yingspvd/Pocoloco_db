@@ -43,7 +43,4 @@ if($request_data->action == 'updateData')
 
     echo json_encode($out); 
 }
-
-
-
 ?>
